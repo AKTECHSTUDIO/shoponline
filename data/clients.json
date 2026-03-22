@@ -1,0 +1,27 @@
+{
+  "submissions": [
+    {
+      "id": "c_sample_001",
+      "timestamp": "2024-01-15T10:30:00Z",
+      "name": "Demo User",
+      "shopName": "Sample Shop",
+      "category": "Fashion",
+      "whatsapp": "+91 99999 00000",
+      "email": "demo@example.com",
+      "location": "Ahmedabad, Gujarat",
+      "pagesRequired": ["Home", "Products", "Contact"],
+      "customPages": "",
+      "features": {
+        "googleMaps": true,
+        "socialMedia": true,
+        "chatbot": false,
+        "maintenance": false
+      },
+      "budget": "₹5,000 – ₹10,000",
+      "timeline": "7-14",
+      "additionalRequirements": "Need WhatsApp integration and basic SEO.",
+      "promptSummary": "Build a Fashion e-commerce website for 'Sample Shop' in Ahmedabad, Gujarat. Required pages: Home, Products, Contact. Features: Google Maps, Social Media. Budget: ₹5,000–₹10,000. Timeline: 7-14 days. Additional: Need WhatsApp integration and basic SEO.",
+      "status": "new"
+    }
+  ]
+}

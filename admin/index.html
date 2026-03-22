@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — ShopOnline</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+    :root {
+      --bg:#0f1117; --surf:#1a1d27; --surf2:#242838; --surf3:#2e3348;
+      --txt:#e8e6f0; --txt2:#8a8ea8; --line:rgba(255,255,255,.09);
+      --terra:#e06840; --gold:#f0b040; --green:#40c080; --err:#e05060; --blue:#5888f8;
+      --r:8px; --rl:14px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;font-family:inherit}
+    input,textarea,select{font-family:inherit}
+    h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:var(--surf)}
+    ::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:4px}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:220px 1fr;height:100vh}
+    .sidebar{background:var(--surf);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+    .logo{padding:18px 16px;border-bottom:1px solid var(--line)}
+    .logo-title{font-size:1.15rem;font-weight:900;color:var(--txt)}
+    .logo-title span{color:var(--terra)}
+    .logo-sub{font-size:.7rem;color:var(--txt2);margin-top:2px}
+    .sidenav{flex:1;overflow-y:auto;padding:10px 8px}
+    .nav-group{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);padding:12px 10px 5px}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r);color:var(--txt2);font-size:.84rem;font-weight:500;cursor:pointer;transition:all .15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
+    .nav-item:hover{background:var(--surf2);color:var(--txt)}
+    .nav-item.active{background:rgba(224,104,64,.15);color:var(--terra)}
+    .nav-item .ni{font-size:.95rem;width:18px;flex-shrink:0}
+    .nav-badge{margin-left:auto;background:var(--terra);color:#fff;font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:10px}
+    .sidebar-foot{padding:10px 8px;border-top:1px solid var(--line)}
+    .sidebar-foot a{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:.8rem;color:var(--txt2);border-radius:var(--r);transition:color .15s}
+    .sidebar-foot a:hover{color:var(--terra)}
+
+    /* MAIN */
+    .main{display:flex;flex-direction:column;overflow:hidden}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;border-bottom:1px solid var(--line);background:var(--surf);flex-shrink:0;gap:12px}
+    .topbar-left{display:flex;align-items:center;gap:10px}
+    .topbar-title{font-size:.92rem;font-weight:600}
+    .dirty-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;display:none}
+    .dirty-dot.show{display:block}
+    .topbar-right{display:flex;gap:8px}
+    .content{flex:1;overflow-y:auto;padding:20px}
+
+    /* CARDS */
+    .card{background:var(--surf);border:1px solid var(--line);border-radius:var(--rl);padding:18px}
+    .card-sm{padding:14px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+    .stat-n{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;line-height:1}
+    .stat-l{font-size:.72rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-size:.8rem;font-weight:600;border:1.5px solid transparent;transition:all .15s;cursor:pointer;white-space:nowrap}
+    .btn-p{background:var(--terra);color:#fff;border-color:var(--terra)}
+    .btn-p:hover{filter:brightness(1.1)}
+    .btn-g{background:transparent;color:var(--txt2);border-color:var(--line)}
+    .btn-g:hover{color:var(--txt);border-color:var(--txt2)}
+    .btn-ok{background:var(--green);color:#1a1d27;border-color:var(--green)}
+    .btn-ok:hover{filter:brightness(1.05)}
+    .btn-red{background:transparent;color:var(--err);border-color:var(--err)}
+    .btn-red:hover{background:var(--err);color:#fff}
+    .btn-blue{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .btn-sm{padding:5px 10px;font-size:.75rem}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    /* FORMS */
+    .fg{margin-bottom:14px}
+    .fl{display:block;font-size:.72rem;font-weight:700;color:var(--txt2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+    .fi,.fs,.ft{width:100%;padding:8px 11px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r);font-size:.84rem;color:var(--txt);outline:none;transition:border-color .15s}
+    .fi:focus,.fs:focus,.ft:focus{border-color:var(--terra)}
+    .ft{resize:vertical;min-height:70px}
+    .fs{appearance:none;cursor:pointer}
+    .fi-mono{font-family:'DM Mono',monospace;font-size:.8rem}
+    .toggle-row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--surf2);border-radius:var(--r)}
+    .toggle-label{flex:1;font-size:.84rem}
+    .toggle-sub{font-size:.72rem;color:var(--txt2)}
+    input[type=checkbox]{width:36px;height:20px;accent-color:var(--terra);cursor:pointer;flex-shrink:0}
+    input[type=color]{width:34px;height:34px;border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;background:none;padding:2px}
+
+    /* TABLE */
+    .tbl{width:100%;border-collapse:collapse}
+    .tbl th{text-align:left;padding:9px 12px;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt2);border-bottom:1px solid var(--line)}
+    .tbl td{padding:10px 12px;font-size:.82rem;border-bottom:1px solid var(--line);vertical-align:middle}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl tr:hover td{background:rgba(255,255,255,.02)}
+
+    /* BADGE */
+    .badge{display:inline-block;padding:3px 8px;border-radius:100px;font-size:.68rem;font-weight:700}
+    .b-new{background:rgba(88,136,248,.18);color:var(--blue)}
+    .b-contacted{background:rgba(240,176,64,.18);color:var(--gold)}
+    .b-done{background:rgba(64,192,128,.18);color:var(--green)}
+
+    /* PUBLISH */
+    .pub-bar{background:rgba(224,104,64,.1);border:1px solid rgba(224,104,64,.25);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+    .pub-bar p{font-size:.8rem;color:var(--terra)}
+
+    /* MODAL */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal{background:var(--surf);border:1px solid var(--line);border-radius:var(--rl);padding:24px;max-width:640px;width:100%;max-height:85vh;overflow-y:auto}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .modal-head h3{font-size:1.1rem}
+
+    /* LOADING */
+    .ov{position:fixed;inset:0;background:rgba(15,17,23,.8);z-index:9999;display:flex;align-items:center;justify-content:center}
+    .spin{width:34px;height:34px;border:3px solid rgba(224,104,64,.2);border-top-color:var(--terra);border-radius:50%;animation:spin .65s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* TOAST */
+    .toasts{position:fixed;top:14px;right:14px;z-index:9998;display:flex;flex-direction:column;gap:8px}
+    .toast{background:var(--surf2);color:var(--txt);padding:10px 14px;border-radius:var(--r);font-size:.8rem;font-weight:500;border-left:3px solid var(--terra);box-shadow:0 8px 24px rgba(0,0,0,.5);animation:tin .25s ease;max-width:300px}
+    .toast.ok{border-left-color:var(--green)}
+    .toast.err{border-left-color:var(--err)}
+    @keyframes tin{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+
+    /* AUTH GATE */
+    .gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .gate-box{background:var(--surf);border:1px solid var(--line);border-radius:var(--rl);padding:36px;max-width:360px;width:90%;text-align:center}
+
+    /* SECTION HEADERS */
+    .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .sh-t{font-size:.88rem;font-weight:700}
+
+    /* Plan editor card */
+    .plan-card{border:1px solid var(--line);border-radius:var(--rl);padding:14px;margin-bottom:12px}
+    .plan-card.featured{border-color:var(--terra)}
+
+    /* Code block */
+    .code-block{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px;font-family:'DM Mono',monospace;font-size:.75rem;color:var(--green);white-space:pre-wrap;overflow-x:auto;max-height:300px;overflow-y:auto}
+
+    /* Steps indicator */
+    .step-ind{display:flex;gap:8px;margin-bottom:18px}
+    .step-dot{width:8px;height:8px;border-radius:50%;background:var(--surf3)}
+    .step-dot.done{background:var(--green)}
+    .step-dot.active{background:var(--terra)}
+
+    @media(max-width:800px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .grid4{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div id="gateSetup" style="display:none">
+      <div style="font-size:2.2rem;margin-bottom:14px">🛠️</div>
+      <h2 style="font-size:1.4rem;margin-bottom:6px">First-Time Setup</h2>
+      <p style="font-size:.82rem;color:var(--txt2);margin-bottom:20px">No password set yet. Create your admin password to get started.</p>
+      <input type="password" id="pwSetup" class="fi" placeholder="Create a password..." style="text-align:center;margin-bottom:8px;font-size:.95rem" autocomplete="new-password">
+      <input type="password" id="pwSetupConfirm" class="fi" placeholder="Confirm password..." style="text-align:center;margin-bottom:4px;font-size:.95rem" autocomplete="new-password">
+      <div id="pwSetupErr" style="display:none;font-size:.72rem;color:var(--err);margin-bottom:10px;text-align:left">❌ Passwords don't match or too short (min 6 chars)</div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="setupPassword()">Create Password & Enter →</button>
+    </div>
+    <div id="gateLogin">
+      <div style="font-size:2.2rem;margin-bottom:14px">🔒</div>
+      <h2 style="font-size:1.4rem;margin-bottom:6px">Admin Access</h2>
+      <p style="font-size:.82rem;color:var(--txt2);margin-bottom:20px">Enter your password to open the dashboard</p>
+      <input type="password" id="pwInput" class="fi" placeholder="Password..." style="text-align:center;margin-bottom:12px;font-size:.95rem" autocomplete="current-password">
+      <button class="btn btn-p" style="width:100%;justify-content:center" onclick="checkAuth()">Unlock Dashboard →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout" id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-title">Shop<span>Online</span></div>
+      <div class="logo-sub">Admin Panel</div>
+    </div>
+    <nav class="sidenav">
+      <div class="nav-group">Dashboard</div>
+      <button class="nav-item active" data-p="overview" onclick="nav(this)"><span class="ni">📊</span>Overview<span class="nav-badge" id="nbNew" style="display:none">0</span></button>
+      <button class="nav-item" data-p="clients" onclick="nav(this)"><span class="ni">📥</span>Submissions</button>
+
+      <div class="nav-group">Content</div>
+      <button class="nav-item" data-p="site" onclick="nav(this)"><span class="ni">⚙️</span>Site Settings</button>
+      <button class="nav-item" data-p="hero" onclick="nav(this)"><span class="ni">🏠</span>Hero Section</button>
+      <button class="nav-item" data-p="services" onclick="nav(this)"><span class="ni">🛠️</span>Services</button>
+      <button class="nav-item" data-p="portfolio" onclick="nav(this)"><span class="ni">🖼️</span>Portfolio</button>
+      <button class="nav-item" data-p="pricing" onclick="nav(this)"><span class="ni">💰</span>Pricing Plans</button>
+      <button class="nav-item" data-p="testimonials" onclick="nav(this)"><span class="ni">⭐</span>Testimonials</button>
+
+      <div class="nav-group">System</div>
+      <button class="nav-item" data-p="integrations" onclick="nav(this)"><span class="ni">🔗</span>Integrations</button>
+      <button class="nav-item" data-p="publish" onclick="nav(this)"><span class="ni">🚀</span>Publish & Deploy</button>
+      <button class="nav-item" data-p="settings" onclick="nav(this)"><span class="ni">🔑</span>Password & Security</button>
+    </nav>
+    <div class="sidebar-foot">
+      <a href="/" target="_blank"><span>←</span> View Website</a>
+      <a href="#" onclick="logout()"><span>🚪</span> Logout</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="topTitle">Overview</div>
+        <div class="dirty-dot" id="dirtyDot" title="Unsaved changes"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-g btn-sm" onclick="loadAll()">↻ Reload</button>
+        <button class="btn btn-g btn-sm" onclick="saveLocal()">💾 Save</button>
+        <button class="btn btn-p btn-sm" onclick="nav(document.querySelector('[data-p=publish]'))">🚀 Publish</button>
+      </div>
+    </div>
+    <div class="content" id="pg"></div>
+  </div>
+</div>
+
+<!-- OVERLAYS -->
+<div class="ov" id="ov" style="display:none"><div class="spin"></div></div>
+<div class="toasts" id="tc"></div>
+
+<!-- MODAL CONTAINER -->
+<div class="modal-bg" id="modalBg" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<script>
+'use strict';
+/* =============================================
+   STATE
+   ============================================= */
+let S = { site:{}, pages:{}, clients:{submissions:[]}, dirty:false, currentPage:'overview', githubToken:'' };
+
+/* =============================================
+   AUTH
+   ============================================= */
+const PASS = localStorage.getItem('so_adm_p') || '';
+
+function checkAuth(){
+  const v = document.getElementById('pwInput').value;
+  if(v===PASS || v===atob(localStorage.getItem('so_adm_h')||'')){
+    localStorage.setItem('so_admin','true');
+    localStorage.setItem('so_adm_h', btoa(v));
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='grid';
+    loadAll();
+  } else {
+    toast('Incorrect password','err');
+    document.getElementById('pwInput').value='';
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkAuth()});
+document.getElementById('pwSetup').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pwSetupConfirm').focus()});
+document.getElementById('pwSetupConfirm').addEventListener('keydown',e=>{if(e.key==='Enter')setupPassword()});
+
+function setupPassword(){
+  const p1 = document.getElementById('pwSetup').value;
+  const p2 = document.getElementById('pwSetupConfirm').value;
+  const err = document.getElementById('pwSetupErr');
+  if(p1.length < 6 || p1 !== p2){ err.style.display='block'; return; }
+  err.style.display='none';
+  localStorage.setItem('so_adm_p', p1);
+  localStorage.setItem('so_adm_h', btoa(p1));
+  localStorage.setItem('so_admin','true');
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='grid';
+  loadAll();
+}
+
+function logout(){
+  localStorage.removeItem('so_admin');
+  location.reload();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  S.githubToken = localStorage.getItem('so_gh_token')||'';
+  const alreadyIn = localStorage.getItem('so_admin')==='true'
+                 || new URLSearchParams(location.search).get('admin')==='true';
+  if(alreadyIn){
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='grid';
+    loadAll();
+    return;
+  }
+  // Show gate — decide login vs first-run setup
+  const hasPassword = !!localStorage.getItem('so_adm_p');
+  document.getElementById('gate').style.display='flex';
+  document.getElementById('gateLogin').style.display = hasPassword ? 'block' : 'none';
+  document.getElementById('gateSetup').style.display = hasPassword ? 'none' : 'block';
+});
+
+/* =============================================
+   DATA LOADING
+   ============================================= */
+async function loadAll(){
+  showOv(true);
+  try {
+    const v = '?v='+Date.now();
+    [S.site, S.pages, S.clients] = await Promise.all([
+      fetch('/data/site.json'+v).then(r=>r.json()).catch(()=>({})),
+      fetch('/data/pages.json'+v).then(r=>r.json()).catch(()=>({})),
+      fetch('/data/clients.json'+v).then(r=>r.json()).catch(()=>({submissions:[]}))
+    ]);
+    // merge localStorage submissions
+    try{
+      const loc = JSON.parse(localStorage.getItem('so_submissions')||'[]');
+      const ids = new Set((S.clients.submissions||[]).map(x=>x.id));
+      loc.filter(x=>!ids.has(x.id)).forEach(x=>S.clients.submissions.unshift(x));
+    }catch(e){}
+    // restore local edits
+    try{
+      const ls = localStorage.getItem('so_site_data'); if(ls) S.site=JSON.parse(ls);
+      const lp = localStorage.getItem('so_pages_data'); if(lp) S.pages=JSON.parse(lp);
+    }catch(e){}
+    updateBadge();
+    render();
+  } catch(e){ toast('Load error: '+e.message,'err'); }
+  showOv(false);
+}
+
+function saveLocal(){
+  localStorage.setItem('so_site_data', JSON.stringify(S.site));
+  localStorage.setItem('so_pages_data', JSON.stringify(S.pages));
+  S.dirty=false;
+  document.getElementById('dirtyDot').classList.remove('show');
+  toast('Saved locally. Click Publish to deploy.','ok');
+}
+
+function markDirty(){
+  S.dirty=true;
+  document.getElementById('dirtyDot').classList.add('show');
+}
+
+function updateBadge(){
+  const n = (S.clients.submissions||[]).filter(x=>x.status==='new'||!x.status).length;
+  const el = document.getElementById('nbNew');
+  if(el){ el.textContent=n; el.style.display=n?'inline':'none'; }
+}
+
+/* =============================================
+   NAVIGATION
+   ============================================= */
+function nav(el){
+  if(!el) return;
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  S.currentPage = el.dataset.p;
+  document.getElementById('topTitle').textContent = el.textContent.trim().replace(/\d+$/,'');
+  render();
+}
+
+function render(){
+  const map = {overview,clients,site,hero,services,portfolio,pricing,testimonials,integrations,publish,settings};
+  const html = map[S.currentPage] ? map[S.currentPage]() : '<p style="color:var(--txt2)">Page coming soon</p>';
+  document.getElementById('pg').innerHTML = html;
+  bindAll();
+}
+
+/* =============================================
+   TOAST / OV / MODAL
+   ============================================= */
+function toast(msg,type=''){
+  const t=document.createElement('div');
+  t.className='toast '+(type||'');
+  t.textContent=msg;
+  document.getElementById('tc').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(14px)';t.style.transition='all .25s';setTimeout(()=>t.remove(),250)},3200);
+}
+function showOv(s){ document.getElementById('ov').style.display=s?'flex':'none'; }
+function openModal(html){ document.getElementById('modalBox').innerHTML=html; document.getElementById('modalBg').style.display='flex'; }
+function closeModal(){ document.getElementById('modalBg').style.display='none'; }
+
+/* =============================================
+   BIND EVENTS (called after each render)
+   ============================================= */
+function bindAll(){
+  // Auto-bind data-bind inputs
+  document.querySelectorAll('[data-bind]').forEach(el=>{
+    el.addEventListener('input',()=>{
+      const path = el.dataset.bind.split('.');
+      let obj = S[path[0]];
+      if(!obj) return;
+      for(let i=1;i<path.length-1;i++){
+        if(obj[path[i]]===undefined) obj[path[i]]={};
+        obj=obj[path[i]];
+      }
+      obj[path[path.length-1]] = el.type==='checkbox' ? el.checked : el.value;
+      markDirty();
+    });
+  });
+}
+
+/* =============================================
+   PAGE: OVERVIEW
+   ============================================= */
+function overview(){
+  const subs = S.clients.submissions||[];
+  const newC = subs.filter(x=>!x.status||x.status==='new').length;
+  const now = new Date();
+  const monthC = subs.filter(x=>{ const d=new Date(x.timestamp); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); }).length;
+  const recent = subs.slice(0,6);
+  return `
+  <div class="grid4">
+    <div class="card stat-card"><div class="stat-l">Total Leads</div><div class="stat-n" style="color:var(--terra)">${subs.length}</div></div>
+    <div class="card stat-card"><div class="stat-l">New (Unread)</div><div class="stat-n" style="color:var(--blue)">${newC}</div></div>
+    <div class="card stat-card"><div class="stat-l">This Month</div><div class="stat-n" style="color:var(--green)">${monthC}</div></div>
+    <div class="card stat-card"><div class="stat-l">Plans Active</div><div class="stat-n">${(S.pages.pricing?.plans||[]).length}</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="sh"><div class="sh-t">Recent Submissions</div><button class="btn btn-g btn-sm" onclick="nav(document.querySelector('[data-p=clients]'))">All →</button></div>
+      ${recent.length ? recent.map(s=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">
+          <div>
+            <div style="font-weight:600;font-size:.84rem">${esc(s.shopName||'?')}</div>
+            <div style="font-size:.72rem;color:var(--txt2)">${esc(s.name)} · ${esc(s.category||'')}</div>
+          </div>
+          <span class="badge b-${s.status||'new'}">${s.status||'new'}</span>
+        </div>`).join('') : '<p style="color:var(--txt2);font-size:.82rem;padding:12px 0">No submissions yet</p>'}
+    </div>
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-g" style="justify-content:flex-start" onclick="nav(document.querySelector('[data-p=site]'))">⚙️ Edit Site Settings</button>
+        <button class="btn btn-g" style="justify-content:flex-start" onclick="nav(document.querySelector('[data-p=pricing]'))">💰 Update Pricing Plans</button>
+        <button class="btn btn-g" style="justify-content:flex-start" onclick="nav(document.querySelector('[data-p=portfolio]'))">🖼️ Add Portfolio Item</button>
+        <button class="btn btn-g" style="justify-content:flex-start" onclick="nav(document.querySelector('[data-p=testimonials]'))">⭐ Edit Testimonials</button>
+        <button class="btn btn-g" style="justify-content:flex-start" onclick="nav(document.querySelector('[data-p=publish]'))">🚀 Deploy to GitHub</button>
+        <a href="/" target="_blank" class="btn btn-g" style="justify-content:flex-start">👁️ View Live Site</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* =============================================
+   PAGE: CLIENTS
+   ============================================= */
+function clients(){
+  const subs = S.clients.submissions||[];
+  return `
+  <div class="sh">
+    <div>
+      <div style="font-size:.92rem;font-weight:700">Client Submissions</div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">${subs.length} total · Sources: form + localStorage</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-g btn-sm" onclick="clearLocalSubs()">🗑️ Clear Local</button>
+      <button class="btn btn-g btn-sm" onclick="exportCSV()">📥 CSV Export</button>
+    </div>
+  </div>
+  <div class="card" style="overflow-x:auto">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>#</th><th>Shop / Name</th><th>Category</th><th>Contact</th>
+          <th>Budget</th><th>Date</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${subs.length ? subs.map((s,i)=>`
+          <tr>
+            <td style="color:var(--txt2);font-size:.72rem">${i+1}</td>
+            <td>
+              <div style="font-weight:600">${esc(s.shopName||'?')}</div>
+              <div style="font-size:.72rem;color:var(--txt2)">${esc(s.name)}</div>
+            </td>
+            <td><div style="font-size:.78rem">${esc(s.category||'?')}</div></td>
+            <td>
+              <div style="font-size:.78rem">${esc(s.whatsapp||'')}</div>
+              <div style="font-size:.72rem;color:var(--txt2)">${esc(s.email||'')}</div>
+            </td>
+            <td style="font-size:.78rem">${esc(s.budget||'—')}</td>
+            <td style="font-size:.72rem;color:var(--txt2)">${s.timestamp ? new Date(s.timestamp).toLocaleDateString('en-IN') : '?'}</td>
+            <td>
+              <select class="fs" style="font-size:.72rem;padding:4px 8px" onchange="setStatus(${i},this.value)">
+                <option value="new" ${(!s.status||s.status==='new')?'selected':''}>🔵 New</option>
+                <option value="contacted" ${s.status==='contacted'?'selected':''}>🟡 Contacted</option>
+                <option value="done" ${s.status==='done'?'selected':''}>🟢 Done</option>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-g btn-sm" onclick="viewSub(${i})">View</button>
+            </td>
+          </tr>`).join('')
+        : `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--txt2)">No submissions yet. They appear here when the form is filled.</td></tr>`}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function setStatus(i,val){
+  S.clients.submissions[i].status = val;
+  updateBadge();
+  toast('Status updated','ok');
+  // Persist to localStorage
+  localStorage.setItem('so_submissions', JSON.stringify(S.clients.submissions.filter(s=>s.id?.startsWith('c_')&&!s.id?.startsWith('c_sample'))));
+}
+
+function viewSub(i){
+  const s = S.clients.submissions[i];
+  if(!s) return;
+  const features = s.features ? Object.entries(s.features).filter(([,v])=>v).map(([k])=>k).join(', ')||'None' : 'N/A';
+  openModal(`
+    <div class="modal-head">
+      <h3>${esc(s.shopName)}</h3>
+      <button class="btn btn-g btn-sm" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div class="grid2" style="gap:14px;margin-bottom:14px">
+      <div class="fg"><div class="fl">Name</div><div class="fi-mono" style="padding:8px;background:var(--bg);border-radius:var(--r)">${esc(s.name)}</div></div>
+      <div class="fg"><div class="fl">Category</div><div class="fi-mono" style="padding:8px;background:var(--bg);border-radius:var(--r)">${esc(s.category)}</div></div>
+      <div class="fg"><div class="fl">WhatsApp</div><div>${esc(s.whatsapp)} <a href="https://wa.me/${s.whatsapp?.replace(/\D/g,'')}" target="_blank" style="color:var(--green);font-size:.75rem;margin-left:6px">Open →</a></div></div>
+      <div class="fg"><div class="fl">Email</div><div>${esc(s.email)}</div></div>
+      <div class="fg"><div class="fl">Location</div><div>${esc(s.location)}</div></div>
+      <div class="fg"><div class="fl">Budget</div><div>${esc(s.budget)}</div></div>
+      <div class="fg"><div class="fl">Timeline</div><div>${esc(s.timeline||'—')}</div></div>
+      <div class="fg"><div class="fl">Pages</div><div>${(s.pages||[]).join(', ')||'—'}</div></div>
+    </div>
+    <div class="fg"><div class="fl">Features</div><div>${features}</div></div>
+    <div class="fg"><div class="fl">Additional Requirements</div><div style="white-space:pre-wrap;font-size:.8rem;color:var(--txt2)">${esc(s.additionalRequirements||'—')}</div></div>
+    ${s.promptSummary ? `
+    <div class="fg">
+      <div class="fl">Auto-Generated Prompt Summary</div>
+      <div class="code-block">${esc(s.promptSummary)}</div>
+      <button class="btn btn-g btn-sm" style="margin-top:8px" onclick="navigator.clipboard.writeText(${JSON.stringify(s.promptSummary)}).then(()=>toast('Copied!','ok'))">📋 Copy Prompt</button>
+    </div>` : ''}
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <a href="https://wa.me/${(s.whatsapp||'').replace(/\D/g,'')}?text=Hi+${encodeURIComponent(s.name)}%2C+this+is+ShopOnline+regarding+your+enquiry." target="_blank" class="btn btn-ok">💬 WhatsApp</a>
+      <a href="mailto:${s.email}?subject=Your ShopOnline Enquiry&body=Hi ${s.name}," class="btn btn-blue">📧 Email</a>
+    </div>
+  `);
+}
+
+function exportCSV(){
+  const subs = S.clients.submissions||[];
+  if(!subs.length){toast('No submissions to export','err');return;}
+  const headers = ['id','timestamp','name','shopName','category','whatsapp','email','location','budget','timeline','status'];
+  const rows = subs.map(s=>headers.map(h=>`"${(s[h]||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='shoponline_leads_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV exported','ok');
+}
+
+function clearLocalSubs(){
+  if(!confirm('Remove locally-stored submissions? (Does not affect server data)')) return;
+  localStorage.removeItem('so_submissions');
+  S.clients.submissions = S.clients.submissions.filter(s=>s.id==='c_sample_001');
+  toast('Local submissions cleared','ok');
+  render();
+}
+
+/* =============================================
+   PAGE: SITE SETTINGS
+   ============================================= */
+function site(){
+  const d = S.site;
+  return `
+  <div class="pub-bar"><p>⚠️ Changes saved locally until you Publish to GitHub</p><button class="btn btn-p btn-sm" onclick="saveLocal()">💾 Save Now</button></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">Basic Info</div>
+      <div class="fg"><label class="fl">Site Name</label><input class="fi" data-bind="site.name" value="${esc(d.name||'')}"></div>
+      <div class="fg"><label class="fl">Tagline</label><textarea class="ft" data-bind="site.tagline">${esc(d.tagline||'')}</textarea></div>
+      <div class="fg">
+        <label class="fl">Primary Color</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="color" value="${d.primaryColor||'#c85a2a'}" oninput="S.site.primaryColor=this.value;this.nextElementSibling.value=this.value;markDirty()">
+          <input class="fi fi-mono" style="flex:1" value="${d.primaryColor||'#c85a2a'}" oninput="S.site.primaryColor=this.value;this.previousElementSibling.value=this.value;markDirty()">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Accent Color</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="color" value="${d.accentColor||'#d4a254'}" oninput="S.site.accentColor=this.value;this.nextElementSibling.value=this.value;markDirty()">
+          <input class="fi fi-mono" style="flex:1" value="${d.accentColor||'#d4a254'}" oninput="S.site.accentColor=this.value;this.previousElementSibling.value=this.value;markDirty()">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">Contact Info</div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" data-bind="site.contact.email" value="${esc(d.contact?.email||'')}"></div>
+      <div class="fg"><label class="fl">Phone</label><input class="fi" data-bind="site.contact.phone" value="${esc(d.contact?.phone||'')}"></div>
+      <div class="fg"><label class="fl">WhatsApp (digits only)</label><input class="fi" data-bind="site.contact.whatsapp" value="${esc(d.contact?.whatsapp||'')}"></div>
+      <div class="fg"><label class="fl">Address</label><input class="fi" data-bind="site.contact.address" value="${esc(d.contact?.address||'')}"></div>
+    </div>
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">Social Media</div>
+      ${['instagram','facebook','linkedin'].map(s=>`<div class="fg"><label class="fl">${s.charAt(0).toUpperCase()+s.slice(1)}</label><input class="fi" data-bind="site.social.${s}" value="${esc(d.social?.[s]||'')}"></div>`).join('')}
+      <div class="fg"><label class="fl">WhatsApp Link</label><input class="fi" data-bind="site.social.whatsapp" value="${esc(d.social?.whatsapp||'')}"></div>
+    </div>
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">SEO</div>
+      <div class="fg"><label class="fl">Page Title</label><input class="fi" data-bind="site.seo.title" value="${esc(d.seo?.title||'')}"></div>
+      <div class="fg"><label class="fl">Meta Description</label><textarea class="ft" data-bind="site.seo.description">${esc(d.seo?.description||'')}</textarea></div>
+      <div class="fg"><label class="fl">Keywords</label><input class="fi" data-bind="site.seo.keywords" value="${esc(d.seo?.keywords||'')}"></div>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:10px">
+    <button class="btn btn-p" onclick="saveLocal()">💾 Save Changes</button>
+    <button class="btn btn-g" onclick="previewJSON('site')">👁️ Preview JSON</button>
+  </div>`;
+}
+
+/* =============================================
+   PAGE: HERO
+   ============================================= */
+function hero(){
+  const h = S.site.hero||{};
+  return `
+  <div class="pub-bar"><p>Editing the home page hero section</p><button class="btn btn-p btn-sm" onclick="saveLocal()">💾 Save</button></div>
+  <div class="card" style="max-width:720px">
+    <div class="sh-t" style="margin-bottom:16px">Hero Section</div>
+    <div class="fg"><label class="fl">Eyebrow Text (small label above title)</label><input class="fi" data-bind="site.hero.eyebrow" value="${esc(h.eyebrow||'')}"></div>
+    <div class="fg"><label class="fl">Main Title (HTML allowed, use &lt;em&gt; for italic)</label><textarea class="ft" data-bind="site.hero.title">${esc(h.title||'')}</textarea></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="ft" data-bind="site.hero.description">${esc(h.description||'')}</textarea></div>
+    <div class="grid2">
+      <div>
+        <div class="sh-t" style="margin-bottom:10px;font-size:.8rem">CTA Button 1</div>
+        <div class="fg"><label class="fl">Text</label><input class="fi" data-bind="site.hero.cta1.text" value="${esc(h.cta1?.text||'')}"></div>
+        <div class="fg"><label class="fl">Link</label><input class="fi" data-bind="site.hero.cta1.href" value="${esc(h.cta1?.href||'')}"></div>
+      </div>
+      <div>
+        <div class="sh-t" style="margin-bottom:10px;font-size:.8rem">CTA Button 2</div>
+        <div class="fg"><label class="fl">Text</label><input class="fi" data-bind="site.hero.cta2.text" value="${esc(h.cta2?.text||'')}"></div>
+        <div class="fg"><label class="fl">Link</label><input class="fi" data-bind="site.hero.cta2.href" value="${esc(h.cta2?.href||'')}"></div>
+      </div>
+    </div>
+    <div class="sh-t" style="margin-bottom:10px;font-size:.8rem">Stats (3 counters)</div>
+    ${(h.stats||[{num:'',label:''},{num:'',label:''},{num:'',label:''}]).map((st,i)=>`
+      <div style="display:flex;gap:10px;margin-bottom:10px">
+        <input class="fi" placeholder="Number e.g. 150+" value="${esc(st.num)}" oninput="if(!S.site.hero)S.site.hero={};if(!S.site.hero.stats)S.site.hero.stats=[{},{},{}];S.site.hero.stats[${i}].num=this.value;markDirty()">
+        <input class="fi" placeholder="Label e.g. Shops Online" value="${esc(st.label)}" oninput="if(!S.site.hero)S.site.hero={};if(!S.site.hero.stats)S.site.hero.stats=[{},{},{}];S.site.hero.stats[${i}].label=this.value;markDirty()">
+      </div>`).join('')}
+    <button class="btn btn-p" onclick="saveLocal()" style="margin-top:8px">💾 Save Hero</button>
+  </div>`;
+}
+
+/* =============================================
+   PAGE: SERVICES
+   ============================================= */
+function services(){
+  const items = S.pages.services?.items||[];
+  return `
+  <div class="sh">
+    <div class="sh-t">Services (${items.length})</div>
+    <button class="btn btn-p btn-sm" onclick="addService()">+ Add Service</button>
+  </div>
+  <div id="servList">
+    ${items.map((s,i)=>`
+      <div class="card" style="margin-bottom:12px">
+        <div class="sh">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:1.4rem">${s.icon}</span>
+            <div>
+              <div style="font-weight:600">${esc(s.title)}</div>
+              <div style="font-size:.72rem;color:var(--txt2)">${esc(s.description||'').slice(0,60)}...</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-g btn-sm" onclick="editService(${i})">Edit</button>
+            <button class="btn btn-red btn-sm" onclick="deleteService(${i})">Delete</button>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function editService(i){
+  const items = S.pages.services?.items||[];
+  const s = i===-1 ? {id:'s_'+Date.now(),icon:'🛒',title:'',description:'',features:[]} : items[i];
+  openModal(`
+    <div class="modal-head"><h3>${i===-1?'Add':'Edit'} Service</h3><button class="btn btn-g btn-sm" onclick="closeModal()">✕</button></div>
+    <div class="fg"><label class="fl">Icon (emoji)</label><input class="fi" id="si_icon" value="${esc(s.icon||'')}"></div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="si_title" value="${esc(s.title||'')}"></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="ft" id="si_desc">${esc(s.description||'')}</textarea></div>
+    <div class="fg"><label class="fl">Features (one per line)</label><textarea class="ft" id="si_feats" style="min-height:100px">${(s.features||[]).join('\n')}</textarea></div>
+    <button class="btn btn-p" onclick="saveService(${i})" style="margin-top:4px">💾 Save</button>
+  `);
+}
+
+function saveService(i){
+  if(!S.pages.services) S.pages.services={items:[]};
+  const obj = {
+    id: i===-1 ? 's_'+Date.now() : (S.pages.services.items[i]?.id||'s_'+Date.now()),
+    icon: document.getElementById('si_icon').value.trim(),
+    title: document.getElementById('si_title').value.trim(),
+    description: document.getElementById('si_desc').value.trim(),
+    features: document.getElementById('si_feats').value.split('\n').map(f=>f.trim()).filter(Boolean)
+  };
+  if(i===-1) S.pages.services.items.push(obj);
+  else S.pages.services.items[i]=obj;
+  markDirty(); closeModal(); render(); toast('Service saved','ok');
+}
+
+function addService(){ editService(-1); }
+function deleteService(i){
+  if(!confirm('Delete this service?')) return;
+  S.pages.services.items.splice(i,1);
+  markDirty(); render(); toast('Deleted','ok');
+}
+
+/* =============================================
+   PAGE: PORTFOLIO
+   ============================================= */
+function portfolio(){
+  const items = S.pages.portfolio?.items||[];
+  return `
+  <div class="sh">
+    <div class="sh-t">Portfolio Items (${items.length})</div>
+    <button class="btn btn-p btn-sm" onclick="editPortfolio(-1)">+ Add Item</button>
+  </div>
+  <div class="grid2">
+    ${items.map((p,i)=>`
+      <div class="card" style="display:flex;gap:14px;align-items:flex-start">
+        <div style="width:52px;height:52px;border-radius:var(--r);background:${p.imageColor||'#e8e0d4'};display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0">${p.image}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.84rem">${esc(p.title)}</div>
+          <div style="font-size:.72rem;color:var(--txt2);margin-bottom:6px">${esc(p.category)}</div>
+          <div style="font-size:.75rem;color:var(--txt2)">${esc(p.description||'').slice(0,80)}...</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+          <button class="btn btn-g btn-sm" onclick="editPortfolio(${i})">Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deletePortfolio(${i})">Del</button>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function editPortfolio(i){
+  const items = S.pages.portfolio?.items||[];
+  const p = i===-1 ? {id:'p_'+Date.now(),image:'🛍️',imageColor:'#f8e8d4',title:'',category:'',description:'',link:'#',tags:[]} : items[i];
+  openModal(`
+    <div class="modal-head"><h3>${i===-1?'Add':'Edit'} Portfolio Item</h3><button class="btn btn-g btn-sm" onclick="closeModal()">✕</button></div>
+    <div class="grid2" style="gap:12px">
+      <div class="fg"><label class="fl">Emoji Icon</label><input class="fi" id="pi_img" value="${esc(p.image||'')}"></div>
+      <div class="fg"><label class="fl">BG Color</label><input type="color" id="pi_color" value="${p.imageColor||'#f8e8d4'}"><input class="fi" id="pi_colorTxt" value="${p.imageColor||'#f8e8d4'}" oninput="document.getElementById('pi_color').value=this.value"></div>
+    </div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="pi_title" value="${esc(p.title||'')}"></div>
+    <div class="fg"><label class="fl">Category</label><input class="fi" id="pi_cat" value="${esc(p.category||'')}"></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="ft" id="pi_desc">${esc(p.description||'')}</textarea></div>
+    <div class="fg"><label class="fl">Link URL</label><input class="fi" id="pi_link" value="${esc(p.link||'#')}"></div>
+    <div class="fg"><label class="fl">Tags (comma separated)</label><input class="fi" id="pi_tags" value="${(p.tags||[]).join(', ')}"></div>
+    <button class="btn btn-p" onclick="savePortfolio(${i})" style="margin-top:4px">💾 Save</button>
+  `);
+}
+
+function savePortfolio(i){
+  if(!S.pages.portfolio) S.pages.portfolio={items:[]};
+  const color = document.getElementById('pi_color').value;
+  const obj = {
+    id: i===-1 ? 'p_'+Date.now() : (S.pages.portfolio.items[i]?.id||'p_'+Date.now()),
+    image: document.getElementById('pi_img').value.trim(),
+    imageColor: color,
+    title: document.getElementById('pi_title').value.trim(),
+    category: document.getElementById('pi_cat').value.trim(),
+    description: document.getElementById('pi_desc').value.trim(),
+    link: document.getElementById('pi_link').value.trim(),
+    tags: document.getElementById('pi_tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+  };
+  if(i===-1) S.pages.portfolio.items.push(obj);
+  else S.pages.portfolio.items[i]=obj;
+  markDirty(); closeModal(); render(); toast('Portfolio item saved','ok');
+}
+
+function deletePortfolio(i){
+  if(!confirm('Delete this item?')) return;
+  S.pages.portfolio.items.splice(i,1);
+  markDirty(); render(); toast('Deleted','ok');
+}
+
+/* =============================================
+   PAGE: PRICING
+   ============================================= */
+function pricing(){
+  const plans = S.pages.pricing?.plans||[];
+  return `
+  <div class="sh">
+    <div>
+      <div class="sh-t">Pricing Plans (${plans.length})</div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">Currency: ${S.pages.pricing?.currency||'₹'}</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="fg" style="margin:0;display:flex;gap:6px;align-items:center">
+        <label class="fl" style="margin:0;white-space:nowrap">Currency:</label>
+        <input class="fi" style="width:60px" value="${esc(S.pages.pricing?.currency||'₹')}" oninput="if(!S.pages.pricing)S.pages.pricing={};S.pages.pricing.currency=this.value;markDirty()">
+      </div>
+      <button class="btn btn-p btn-sm" onclick="editPlan(-1)">+ Add Plan</button>
+    </div>
+  </div>
+  ${plans.map((p,i)=>`
+    <div class="plan-card ${p.featured?'featured':''}">
+      <div class="sh">
+        <div style="display:flex;align-items:center;gap:10px">
+          ${p.featured?`<span style="background:var(--terra);color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:100px">FEATURED</span>`:''}
+          <div style="font-weight:700">${esc(p.name)}</div>
+          <div style="font-family:'DM Mono',monospace;color:var(--terra)">${S.pages.pricing?.currency||'₹'}${(p.price||0).toLocaleString('en-IN')}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-g btn-sm" onclick="toggleFeatured(${i})">${p.featured?'★ Featured':'☆ Set Featured'}</button>
+          <button class="btn btn-g btn-sm" onclick="editPlan(${i})">Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deletePlan(${i})">Del</button>
+        </div>
+      </div>
+      <div style="font-size:.78rem;color:var(--txt2);margin-top:4px">${(p.features||[]).length} features · ${esc(p.period||'')}</div>
+    </div>`).join('')}`;
+}
+
+function editPlan(i){
+  const plans = S.pages.pricing?.plans||[];
+  const p = i===-1 ? {id:'plan_'+Date.now(),name:'',price:0,period:'one-time',description:'',featured:false,badge:null,features:[],cta:'Get Plan'} : plans[i];
+  openModal(`
+    <div class="modal-head"><h3>${i===-1?'Add':'Edit'} Plan: ${esc(p.name)||'New'}</h3><button class="btn btn-g btn-sm" onclick="closeModal()">✕</button></div>
+    <div class="grid2" style="gap:12px">
+      <div class="fg"><label class="fl">Plan Name</label><input class="fi" id="pl_name" value="${esc(p.name||'')}"></div>
+      <div class="fg"><label class="fl">Price (number)</label><input class="fi" id="pl_price" type="number" value="${p.price||0}"></div>
+      <div class="fg"><label class="fl">Period text</label><input class="fi" id="pl_period" value="${esc(p.period||'')}"></div>
+      <div class="fg"><label class="fl">Badge (empty = none)</label><input class="fi" id="pl_badge" value="${esc(p.badge||'')}"></div>
+    </div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="pl_desc" value="${esc(p.description||'')}"></div>
+    <div class="fg"><label class="fl">CTA Button Text</label><input class="fi" id="pl_cta" value="${esc(p.cta||'Get Plan')}"></div>
+    <div class="fg">
+      <label class="fl">Features (one per line, prefix with "-" if NOT included)</label>
+      <textarea class="ft fi-mono" id="pl_feats" style="min-height:160px">${(p.features||[]).map(f=>(f.included===false?'-':'')+f.text).join('\n')}</textarea>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:4px">Lines starting with "-" are marked as NOT included</div>
+    </div>
+    <button class="btn btn-p" onclick="savePlan(${i})" style="margin-top:4px">💾 Save Plan</button>
+  `);
+}
+
+function savePlan(i){
+  if(!S.pages.pricing) S.pages.pricing={currency:'₹',plans:[]};
+  const feats = document.getElementById('pl_feats').value.split('\n').map(f=>f.trim()).filter(Boolean).map(f=>({text:f.startsWith('-')?f.slice(1).trim():f, included:!f.startsWith('-')}));
+  const badge = document.getElementById('pl_badge').value.trim() || null;
+  const obj = {
+    id: i===-1 ? 'plan_'+Date.now() : (S.pages.pricing.plans[i]?.id||'plan_'+Date.now()),
+    name: document.getElementById('pl_name').value.trim(),
+    price: parseFloat(document.getElementById('pl_price').value)||0,
+    period: document.getElementById('pl_period').value.trim(),
+    description: document.getElementById('pl_desc').value.trim(),
+    cta: document.getElementById('pl_cta').value.trim(),
+    badge, features: feats,
+    featured: i!==-1 ? S.pages.pricing.plans[i]?.featured||false : false
+  };
+  if(i===-1) S.pages.pricing.plans.push(obj);
+  else S.pages.pricing.plans[i]=obj;
+  markDirty(); closeModal(); render(); toast('Plan saved','ok');
+}
+
+function deletePlan(i){
+  if(!confirm('Delete this plan?')) return;
+  S.pages.pricing.plans.splice(i,1);
+  markDirty(); render(); toast('Deleted','ok');
+}
+
+function toggleFeatured(i){
+  const plans = S.pages.pricing?.plans||[];
+  plans.forEach((p,j)=>{ p.featured=(j===i); });
+  markDirty(); render(); toast('Featured plan updated','ok');
+}
+
+/* =============================================
+   PAGE: TESTIMONIALS
+   ============================================= */
+function testimonials(){
+  const items = S.pages.testimonials||[];
+  return `
+  <div class="sh">
+    <div class="sh-t">Testimonials (${items.length})</div>
+    <button class="btn btn-p btn-sm" onclick="editTest(-1)">+ Add</button>
+  </div>
+  ${items.map((t,i)=>`
+    <div class="card" style="margin-bottom:10px">
+      <div class="sh">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;background:var(--terra);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0">${esc(t.avatar||'?')}</div>
+          <div>
+            <div style="font-weight:600;font-size:.84rem">${esc(t.name)}</div>
+            <div style="font-size:.72rem;color:var(--txt2)">${esc(t.role)} · ${'★'.repeat(t.stars||5)}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-g btn-sm" onclick="editTest(${i})">Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deleteTest(${i})">Del</button>
+        </div>
+      </div>
+      <p style="font-size:.8rem;color:var(--txt2);font-style:italic;margin-top:8px">"${esc(t.text||'').slice(0,100)}..."</p>
+    </div>`).join('')}`;
+}
+
+function editTest(i){
+  const items = S.pages.testimonials||[];
+  const t = i===-1 ? {name:'',role:'',location:'',avatar:'',text:'',stars:5} : items[i];
+  openModal(`
+    <div class="modal-head"><h3>${i===-1?'Add':'Edit'} Testimonial</h3><button class="btn btn-g btn-sm" onclick="closeModal()">✕</button></div>
+    <div class="grid2" style="gap:12px">
+      <div class="fg"><label class="fl">Name</label><input class="fi" id="tt_name" value="${esc(t.name||'')}"></div>
+      <div class="fg"><label class="fl">Initials (avatar)</label><input class="fi" id="tt_av" value="${esc(t.avatar||'')}"></div>
+      <div class="fg"><label class="fl">Role</label><input class="fi" id="tt_role" value="${esc(t.role||'')}"></div>
+      <div class="fg"><label class="fl">Location</label><input class="fi" id="tt_loc" value="${esc(t.location||'')}"></div>
+    </div>
+    <div class="fg"><label class="fl">Stars (1–5)</label><input class="fi" id="tt_stars" type="number" min="1" max="5" value="${t.stars||5}"></div>
+    <div class="fg"><label class="fl">Testimonial Text</label><textarea class="ft" id="tt_text" style="min-height:100px">${esc(t.text||'')}</textarea></div>
+    <button class="btn btn-p" onclick="saveTest(${i})" style="margin-top:4px">💾 Save</button>
+  `);
+}
+
+function saveTest(i){
+  if(!S.pages.testimonials) S.pages.testimonials=[];
+  const obj = {
+    id: i===-1 ? 't_'+Date.now() : (S.pages.testimonials[i]?.id||'t_'+Date.now()),
+    name: document.getElementById('tt_name').value.trim(),
+    avatar: document.getElementById('tt_av').value.trim(),
+    role: document.getElementById('tt_role').value.trim(),
+    location: document.getElementById('tt_loc').value.trim(),
+    stars: parseInt(document.getElementById('tt_stars').value)||5,
+    text: document.getElementById('tt_text').value.trim()
+  };
+  if(i===-1) S.pages.testimonials.push(obj);
+  else S.pages.testimonials[i]=obj;
+  markDirty(); closeModal(); render(); toast('Testimonial saved','ok');
+}
+
+function deleteTest(i){
+  if(!confirm('Delete?')) return;
+  S.pages.testimonials.splice(i,1);
+  markDirty(); render(); toast('Deleted','ok');
+}
+
+/* =============================================
+   PAGE: INTEGRATIONS
+   ============================================= */
+function integrations(){
+  const f = S.site.features||{};
+  return `
+  <div class="grid2">
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">📊 Google Sheets Webhook</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">Paste your Google Apps Script Web App URL to auto-save form submissions to Google Sheets.</p>
+      <div class="fg"><label class="fl">Web App URL</label><input class="fi fi-mono" data-bind="site.features.googleSheetsWebhook" value="${esc(f.googleSheetsWebhook||'')}" placeholder="https://script.google.com/macros/s/..."></div>
+      <div class="toggle-row" style="margin-top:8px">
+        <div class="toggle-label"><div>Enable Sheets Integration</div><div class="toggle-sub">Saves every form submission to your sheet</div></div>
+        <input type="checkbox" ${f.googleSheetsWebhook && !f.googleSheetsWebhook.startsWith('YOUR_') ? 'checked' : ''} onchange="if(!S.site.features)S.site.features={};markDirty()">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">📧 EmailJS Notifications</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">Receive an email whenever a new form is submitted. Requires a free EmailJS account.</p>
+      <div class="fg"><label class="fl">Service ID</label><input class="fi fi-mono" data-bind="site.features.emailjsServiceId" value="${esc(f.emailjsServiceId||'')}" placeholder="service_xxxxxxx"></div>
+      <div class="fg"><label class="fl">Template ID</label><input class="fi fi-mono" data-bind="site.features.emailjsTemplateId" value="${esc(f.emailjsTemplateId||'')}" placeholder="template_xxxxxxx"></div>
+      <div class="fg"><label class="fl">Public Key</label><input class="fi fi-mono" data-bind="site.features.emailjsPublicKey" value="${esc(f.emailjsPublicKey||'')}" placeholder="XXXXXXXXXXXXXXXXX"></div>
+      <div class="toggle-row">
+        <div class="toggle-label"><div>Enable Email Notifications</div><div class="toggle-sub">Get notified on new submissions</div></div>
+        <input type="checkbox" ${f.emailjsPublicKey && !f.emailjsPublicKey.startsWith('YOUR_') ? 'checked' : ''} onchange="if(!S.site.features)S.site.features={};markDirty()">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">🔑 GitHub Integration</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">Used by the Publish button to commit JSON files to GitHub and trigger redeploy. Token stored in localStorage only.</p>
+      <div class="fg"><label class="fl">GitHub Token (stored locally — never sent to server)</label><input class="fi fi-mono" type="password" id="ghTokenInput" value="${S.githubToken?'●●●●●●●●●●':''}" placeholder="ghp_xxxxxxxxxxxx"></div>
+      <div class="fg"><label class="fl">GitHub Username/Org</label><input class="fi fi-mono" id="ghOwner" value="${localStorage.getItem('so_gh_owner')||''}" placeholder="yourusername"></div>
+      <div class="fg"><label class="fl">Repository Name</label><input class="fi fi-mono" id="ghRepo" value="${localStorage.getItem('so_gh_repo')||''}" placeholder="shoponline"></div>
+      <div class="fg"><label class="fl">Branch</label><input class="fi fi-mono" id="ghBranch" value="${localStorage.getItem('so_gh_branch')||'main'}" placeholder="main"></div>
+      <button class="btn btn-ok" onclick="saveGitHub()">💾 Save GitHub Config</button>
+      <button class="btn btn-g" style="margin-left:8px" onclick="testGitHub()" id="ghTestBtn">🔌 Test Connection</button>
+      <div id="ghTestResult" style="margin-top:10px;font-size:.78rem"></div>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">ℹ️ Setup Instructions</div>
+      <div style="font-size:.78rem;color:var(--txt2);display:flex;flex-direction:column;gap:10px">
+        <div><strong style="color:var(--txt)">Google Sheets:</strong> Go to <a href="https://script.google.com" target="_blank" style="color:var(--terra)">script.google.com</a>, create new project, paste the Apps Script from <code style="background:var(--surf2);padding:1px 4px;border-radius:3px">google-apps-script.js</code>, deploy as Web App (Anyone), copy URL.</div>
+        <div><strong style="color:var(--txt)">EmailJS:</strong> Sign up at <a href="https://emailjs.com" target="_blank" style="color:var(--terra)">emailjs.com</a>, connect email service, create template with variables: client_name, shop_name, email, whatsapp, budget, prompt_summary.</div>
+        <div><strong style="color:var(--txt)">GitHub Token:</strong> Go to GitHub → Settings → Developer Settings → Personal Access Tokens → Fine-grained. Give <code style="background:var(--surf2);padding:1px 4px;border-radius:3px">Contents: Read & Write</code> permission on your repo.</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px">
+    <button class="btn btn-p" onclick="saveLocal()">💾 Save All Integration Settings</button>
+  </div>`;
+}
+
+function saveGitHub(){
+  const t = document.getElementById('ghTokenInput').value;
+  if(t && t !== '●●●●●●●●●●') { S.githubToken=t; localStorage.setItem('so_gh_token',t); }
+  localStorage.setItem('so_gh_owner', document.getElementById('ghOwner').value.trim());
+  localStorage.setItem('so_gh_repo', document.getElementById('ghRepo').value.trim());
+  localStorage.setItem('so_gh_branch', document.getElementById('ghBranch').value.trim()||'main');
+  toast('GitHub config saved','ok');
+}
+
+async function testGitHub(){
+  // Always save first so we test what's in the fields right now
+  saveGitHub();
+
+  const token  = S.githubToken || localStorage.getItem('so_gh_token');
+  const owner  = localStorage.getItem('so_gh_owner');
+  const repo   = localStorage.getItem('so_gh_repo');
+  const branch = localStorage.getItem('so_gh_branch') || 'main';
+  const btn    = document.getElementById('ghTestBtn');
+  const result = document.getElementById('ghTestResult');
+
+  if(!token || !owner || !repo){
+    result.innerHTML = '<span style="color:var(--err)">❌ Fill in all fields first</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Testing...';
+  result.innerHTML = '<span style="color:var(--gold)">⏳ Checking...</span>';
+
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  try {
+    // Test 1: Token valid?
+    const userRes = await fetch('https://api.github.com/user', { headers });
+    if(!userRes.ok){
+      const d = await userRes.json().catch(()=>({}));
+      throw new Error(`Token invalid: ${d.message || userRes.status}`);
+    }
+    const user = await userRes.json();
+
+    // Test 2: Repo accessible?
+    const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+    if(!repoRes.ok){
+      const d = await repoRes.json().catch(()=>({}));
+      if(repoRes.status === 404) throw new Error(`Repo "${owner}/${repo}" not found. Check spelling — it's case-sensitive.`);
+      if(repoRes.status === 403) throw new Error(`No access to repo "${owner}/${repo}". Add this repo to your token's permissions.`);
+      throw new Error(`Repo error (${repoRes.status}): ${d.message}`);
+    }
+    const repoData = await repoRes.json();
+    const defaultBranch = repoData.default_branch;
+
+    // Test 3: Branch exists?
+    const branchRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`, { headers });
+    if(!branchRes.ok){
+      throw new Error(`Branch "${branch}" not found. Your default branch is "${defaultBranch}" — update the Branch field.`);
+    }
+
+    // All good!
+    result.innerHTML = `
+      <div style="background:rgba(64,192,128,.1);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:10px;line-height:1.7">
+        <div style="color:var(--green);font-weight:700;margin-bottom:4px">✅ Connection successful!</div>
+        <div style="color:var(--txt2);font-size:.75rem">
+          Logged in as: <strong style="color:var(--txt)">${esc(user.login)}</strong><br>
+          Repo: <strong style="color:var(--txt)">${esc(owner)}/${esc(repo)}</strong> (${repoData.private ? '🔒 private' : '🌐 public'})<br>
+          Branch: <strong style="color:var(--txt)">${esc(branch)}</strong> ✓<br>
+          You're ready to publish! 🚀
+        </div>
+      </div>`;
+    toast('GitHub connected successfully!', 'ok');
+  } catch(e){
+    result.innerHTML = `
+      <div style="background:rgba(224,80,96,.08);border:1px solid rgba(224,80,96,.25);border-radius:var(--r);padding:10px">
+        <div style="color:var(--err);font-weight:700;margin-bottom:4px">❌ Connection failed</div>
+        <div style="color:var(--txt2);font-size:.75rem;word-break:break-word">${esc(e.message)}</div>
+      </div>`;
+    toast('GitHub test failed', 'err');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🔌 Test Connection';
+}
+
+/* =============================================
+   PAGE: PUBLISH & DEPLOY
+   ============================================= */
+function publish(){
+  const owner = localStorage.getItem('so_gh_owner')||'';
+  const repo = localStorage.getItem('so_gh_repo')||'';
+  const branch = localStorage.getItem('so_gh_branch')||'main';
+  const configured = !!(S.githubToken && owner && repo);
+  return `
+  <div class="grid2">
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:4px">🚀 Publish to GitHub</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:16px">Commits your updated JSON files to GitHub, which triggers automatic redeploy on Netlify/Vercel.</p>
+
+      <div style="margin-bottom:16px">
+        <div class="step-ind">
+          <div class="step-dot ${S.dirty?'active':'done'}"></div>
+          <div class="step-dot ${configured?'done':''}"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+
+      ${!configured ? `
+        <div style="background:rgba(224,104,64,.1);border:1px solid rgba(224,104,64,.25);border-radius:var(--r);padding:12px;margin-bottom:14px;font-size:.78rem;color:var(--terra)">
+          ⚠️ GitHub not configured. Go to <button class="btn btn-g btn-sm" onclick="nav(document.querySelector('[data-p=integrations]'))">Integrations →</button> to set it up.
+        </div>` : `
+        <div style="background:rgba(64,192,128,.08);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:12px;margin-bottom:14px;font-size:.78rem;color:var(--green)">
+          ✅ Connected: <strong>${owner}/${repo}</strong> (${branch})
+        </div>`}
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:.78rem;color:var(--txt2)">Files that will be committed:</div>
+        <div style="background:var(--bg);border-radius:var(--r);padding:10px;font-size:.75rem;font-family:'DM Mono',monospace;color:var(--green)">
+          data/site.json<br>data/pages.json
+        </div>
+        <div class="fg"><label class="fl">Commit message</label><input class="fi fi-mono" id="commitMsg" value="Update site content via admin panel" ></div>
+        <button class="btn btn-p" ${!configured?'disabled':''} onclick="publishToGitHub()" id="pubBtn">
+          🚀 Commit & Deploy
+        </button>
+        <button class="btn btn-g" onclick="saveLocal()">💾 Save Locally Only</button>
+      </div>
+
+      <div id="pubStatus" style="margin-top:14px"></div>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:14px">📥 Export / Backup</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-g" onclick="downloadJSON('site')">📥 Download site.json</button>
+        <button class="btn btn-g" onclick="downloadJSON('pages')">📥 Download pages.json</button>
+        <button class="btn btn-g" onclick="downloadJSON('clients')">📥 Download clients.json</button>
+        <button class="btn btn-g" onclick="exportCSV()">📊 Export Leads as CSV</button>
+      </div>
+      <div class="sh-t" style="margin:16px 0 10px">👁️ Preview JSON</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g btn-sm" onclick="previewJSON('site')">site.json</button>
+        <button class="btn btn-g btn-sm" onclick="previewJSON('pages')">pages.json</button>
+      </div>
+
+      <div class="sh-t" style="margin:16px 0 10px">🌐 Deployment Platforms</div>
+      <div style="font-size:.78rem;color:var(--txt2);display:flex;flex-direction:column;gap:6px">
+        <div>• <strong style="color:var(--txt)">Netlify</strong> — connect GitHub repo, auto-deploys on push</div>
+        <div>• <strong style="color:var(--txt)">Vercel</strong> — same, import repo and deploy</div>
+        <div>• <strong style="color:var(--txt)">GitHub Pages</strong> — enable in repo Settings → Pages</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function publishToGitHub(){
+  const token  = S.githubToken || localStorage.getItem('so_gh_token');
+  const owner  = localStorage.getItem('so_gh_owner');
+  const repo   = localStorage.getItem('so_gh_repo');
+  const branch = localStorage.getItem('so_gh_branch') || 'main';
+  const msg    = document.getElementById('commitMsg')?.value || 'Update content via admin panel';
+
+  if(!token || !owner || !repo){
+    toast('GitHub not configured — go to Integrations first','err');
+    return;
+  }
+
+  const btn = document.getElementById('pubBtn');
+  const statusEl = document.getElementById('pubStatus');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>Publishing...';
+  statusEl.innerHTML = '<div style="color:var(--gold);font-size:.78rem;padding:10px;background:rgba(240,176,64,.08);border-radius:var(--r)">⏳ Verifying token...</div>';
+
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'Content-Type': 'application/json'
+  };
+
+  // Step 0: Verify token is valid before doing anything
+  try {
+    const testRes = await fetch('https://api.github.com/user', { headers });
+    if(!testRes.ok){
+      const d = await testRes.json().catch(()=>({}));
+      throw new Error(d.message || `HTTP ${testRes.status}`);
+    }
+  } catch(e){
+    btn.disabled = false;
+    btn.innerHTML = '🚀 Commit & Deploy';
+    statusEl.innerHTML = `
+      <div style="background:rgba(224,80,96,.08);border:1px solid rgba(224,80,96,.3);border-radius:var(--r);padding:14px;font-size:.78rem">
+        <div style="font-weight:700;color:var(--err);margin-bottom:8px">❌ GitHub Authentication Failed</div>
+        <div style="color:var(--txt2);margin-bottom:10px;word-break:break-word">${esc(e.message)}</div>
+        <div style="color:var(--txt2);line-height:1.7">
+          <strong style="color:var(--txt)">How to fix:</strong><br>
+          1. Go to <strong>Integrations</strong> and re-enter your GitHub token<br>
+          2. Token needs <strong>Contents: Read &amp; Write</strong> permission<br>
+          3. Fine-grained token: select your repo explicitly (not "All repositories")<br>
+          4. Check the token has not expired
+        </div>
+      </div>`;
+    toast('GitHub token error', 'err');
+    return;
+  }
+
+  statusEl.innerHTML = '<div style="color:var(--gold);font-size:.78rem;padding:10px;background:rgba(240,176,64,.08);border-radius:var(--r)">⏳ Committing files to ' + esc(owner) + '/' + esc(repo) + '...</div>';
+
+  const files = [
+    { path:'data/site.json',  content: JSON.stringify(S.site, null, 2) },
+    { path:'data/pages.json', content: JSON.stringify(S.pages, null, 2) }
+  ];
+
+  let allSuccess = true;
+  const results = [];
+
+  for(const file of files){
+    try {
+      // Get current SHA (needed for update). 404 = file doesn't exist yet → create it.
+      let sha = null;
+      const getRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${encodeURIComponent(branch)}`,
+        { headers }
+      );
+
+      if(getRes.ok){
+        const d = await getRes.json();
+        sha = d.sha || null;
+      } else if(getRes.status === 404){
+        sha = null; // file will be created fresh
+      } else {
+        const d = await getRes.json().catch(()=>({}));
+        const hint = getRes.status === 401 || getRes.status === 403
+          ? ' — check token permissions'
+          : getRes.status === 422
+          ? ` — repo "${owner}/${repo}" not found or branch "${branch}" missing`
+          : '';
+        throw new Error(`GET failed (${getRes.status}): ${d.message || getRes.statusText}${hint}`);
+      }
+
+      // Encode content as base64 (UTF-8 safe)
+      const encoded = btoa(unescape(encodeURIComponent(file.content)));
+      const body = { message: msg, content: encoded, branch };
+      if(sha) body.sha = sha; // required for update, omit for new file
+
+      const putRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
+        { method:'PUT', headers, body: JSON.stringify(body) }
+      );
+
+      if(!putRes.ok){
+        const d = await putRes.json().catch(()=>({}));
+        throw new Error(`PUT failed (${putRes.status}): ${d.message || putRes.statusText}`);
+      }
+
+      results.push({ ok:true, file: file.path, note: sha ? 'updated' : 'created' });
+    } catch(e){
+      results.push({ ok:false, file: file.path, error: e.message });
+      allSuccess = false;
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🚀 Commit & Deploy';
+
+  const rows = results.map(r => r.ok
+    ? `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <span style="color:var(--green)">✅</span>
+        <span style="font-family:monospace;font-size:.75rem">${esc(r.file)}</span>
+        <span style="color:var(--txt2);font-size:.7rem">(${r.note})</span>
+       </div>`
+    : `<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:var(--err)">❌</span>
+          <span style="font-family:monospace;font-size:.75rem">${esc(r.file)}</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--err);margin-top:3px;padding-left:22px;word-break:break-word">${esc(r.error)}</div>
+       </div>`
+  ).join('');
+
+  if(allSuccess){
+    statusEl.innerHTML = `
+      <div style="background:rgba(64,192,128,.08);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:14px;font-size:.78rem">
+        <div style="font-weight:700;color:var(--green);margin-bottom:10px">✅ Published! Redeploy starts in ~30 seconds.</div>
+        ${rows}
+        <div style="margin-top:10px;font-size:.72rem;color:var(--txt2)">Committed to <strong style="color:var(--txt)">${esc(owner)}/${esc(repo)}</strong> on branch <strong style="color:var(--txt)">${esc(branch)}</strong></div>
+      </div>`;
+    S.dirty = false;
+    document.getElementById('dirtyDot').classList.remove('show');
+    toast('Published to GitHub! 🚀', 'ok');
+  } else {
+    statusEl.innerHTML = `
+      <div style="background:rgba(224,80,96,.08);border:1px solid rgba(224,80,96,.25);border-radius:var(--r);padding:14px;font-size:.78rem">
+        <div style="font-weight:700;color:var(--err);margin-bottom:10px">❌ Some files failed to commit</div>
+        ${rows}
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);color:var(--txt2);line-height:1.7">
+          <strong style="color:var(--txt)">Common fixes:</strong><br>
+          • Repo name is case-sensitive — double-check spelling in <strong>Integrations</strong><br>
+          • Token must have <strong>Contents: Read &amp; Write</strong> scope for this repo<br>
+          • Branch must exist — check if it's <strong>main</strong> or <strong>master</strong><br>
+          • Fine-grained token: your repo must be explicitly selected
+        </div>
+      </div>`;
+    toast('Commit failed — see details below', 'err');
+  }
+}
+
+function downloadJSON(type){
+  const map = { site:S.site, pages:S.pages, clients:S.clients };
+  const data = map[type];
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data,null,2));
+  a.download=`${type}.json`;
+  a.click();
+  toast('Downloaded '+type+'.json','ok');
+}
+
+function previewJSON(type){
+  const map = { site:S.site, pages:S.pages, clients:S.clients };
+  const json = JSON.stringify(map[type],null,2);
+  openModal(`
+    <div class="modal-head">
+      <h3>${type}.json</h3>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(json)}).then(()=>toast('Copied!','ok'))">📋 Copy</button>
+        <button class="btn btn-g btn-sm" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+    <div class="code-block">${esc(json)}</div>
+  `);
+}
+
+/* =============================================
+   HELPERS
+   ============================================= */
+/* =============================================
+   PAGE: SETTINGS (Password & Security)
+   ============================================= */
+function settings(){
+  return `
+  <div class="grid2">
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:6px">🔑 Change Admin Password</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:18px">Password is stored only in this browser's localStorage. You'll need to update it on every device you use.</p>
+
+      <div class="fg">
+        <label class="fl">Current Password</label>
+        <input class="fi" type="password" id="pwCurrent" placeholder="Enter current password" autocomplete="current-password">
+        <div id="pwCurrentErr" style="display:none;font-size:.72rem;color:var(--err);margin-top:4px">❌ Incorrect current password</div>
+      </div>
+      <div class="fg">
+        <label class="fl">New Password</label>
+        <input class="fi" type="password" id="pwNew" placeholder="Enter new password (min. 6 chars)" autocomplete="new-password">
+        <div id="pwNewErr" style="display:none;font-size:.72rem;color:var(--err);margin-top:4px">❌ Must be at least 6 characters</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Confirm New Password</label>
+        <input class="fi" type="password" id="pwConfirm" placeholder="Re-enter new password" autocomplete="new-password">
+        <div id="pwConfirmErr" style="display:none;font-size:.72rem;color:var(--err);margin-top:4px">❌ Passwords do not match</div>
+      </div>
+
+      <div id="pwSuccess" style="display:none;background:rgba(64,192,128,.12);border:1px solid rgba(64,192,128,.25);border-radius:var(--r);padding:12px;font-size:.8rem;color:var(--green);margin-bottom:14px">
+        ✅ Password changed successfully! Use the new password next time you log in.
+      </div>
+
+      <button class="btn btn-p" onclick="changePassword()">🔑 Change Password</button>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:6px">🔒 Session & Access</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:18px">Manage your current admin session and access methods.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:var(--surf2);border-radius:var(--r);padding:12px">
+          <div style="font-size:.78rem;font-weight:700;margin-bottom:4px">Current Session</div>
+          <div style="font-size:.72rem;color:var(--txt2)">Logged in via: <span style="color:var(--green)">${localStorage.getItem('so_admin')==='true' ? 'Browser localStorage' : 'URL param'}</span></div>
+          <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">Session persists until you log out or clear browser data.</div>
+        </div>
+
+        <div style="background:var(--surf2);border-radius:var(--r);padding:12px">
+          <div style="font-size:.78rem;font-weight:700;margin-bottom:4px">URL Access</div>
+          <div style="font-size:.72rem;color:var(--txt2)">You can also access admin via:<br>
+          <code style="background:var(--bg);padding:2px 5px;border-radius:3px;font-size:.7rem">yoursite.com/admin/?admin=true</code></div>
+          <div style="font-size:.72rem;color:var(--txt2);margin-top:4px">⚠️ Share this URL with caution — anyone with it can open the admin login.</div>
+        </div>
+
+        <div style="background:var(--surf2);border-radius:var(--r);padding:12px">
+          <div style="font-size:.78rem;font-weight:700;margin-bottom:6px">Actions</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-g btn-sm" style="justify-content:flex-start" onclick="clearAllLocal()">🗑️ Clear All Local Data</button>
+            <button class="btn btn-red btn-sm" style="justify-content:flex-start" onclick="logout()">🚪 Log Out Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:6px">ℹ️ Security Notes</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:.78rem;color:var(--txt2)">
+        <div style="display:flex;gap:10px">
+          <span style="color:var(--green);flex-shrink:0">✓</span>
+          <span>Password is stored in <strong style="color:var(--txt)">localStorage only</strong> — never sent to any server.</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <span style="color:var(--green);flex-shrink:0">✓</span>
+          <span>GitHub token is also stored locally — never exposed in public HTML.</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <span style="color:var(--gold);flex-shrink:0">⚠</span>
+          <span>Anyone with physical access to this browser can open DevTools and read localStorage. Use a private/incognito window on shared computers.</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <span style="color:var(--gold);flex-shrink:0">⚠</span>
+          <span>For production: consider adding HTTP Basic Auth at the server/CDN level (Netlify supports this in <code style="background:var(--bg);padding:1px 4px;border-radius:3px">netlify.toml</code>) for stronger protection.</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <span style="color:var(--terra);flex-shrink:0">❌</span>
+          <span>Do NOT share your admin URL or password with untrusted people — they can modify your site content and publish to GitHub.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:6px">💡 Netlify Password Protection (Recommended)</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">Add server-level basic auth to the <code style="background:var(--bg);padding:1px 4px;border-radius:3px">/admin/</code> folder so it requires login even before the page loads.</p>
+      <div style="font-size:.75rem;font-family:'DM Mono',monospace;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px;color:var(--green);white-space:pre">[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    Basic-Auth = "admin:yourpassword"</div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:8px">Add this to your <code style="background:var(--bg);padding:1px 4px;border-radius:3px">netlify.toml</code> file and redeploy. Replace <em>yourpassword</em> with a strong password.</div>
+      <button class="btn btn-g btn-sm" style="margin-top:10px" onclick="navigator.clipboard.writeText('[[headers]]\n  for = \"/admin/*\"\n  [headers.values]\n    Basic-Auth = \"admin:yourpassword\"').then(()=>toast('Copied to clipboard','ok'))">📋 Copy Snippet</button>
+    </div>
+  </div>`;
+}
+
+function changePassword(){
+  // Hide previous errors and success
+  ['pwCurrentErr','pwNewErr','pwConfirmErr','pwSuccess'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+
+  const current  = document.getElementById('pwCurrent').value;
+  const newPw    = document.getElementById('pwNew').value;
+  const confirm  = document.getElementById('pwConfirm').value;
+
+  // Get the actual stored password
+  const stored = localStorage.getItem('so_adm_p') || '';
+  const storedHash = localStorage.getItem('so_adm_h') || '';
+
+  let valid = true;
+
+  // Check current password
+  if(current !== stored && current !== atob(storedHash || btoa(''))){
+    document.getElementById('pwCurrentErr').style.display = 'block';
+    valid = false;
+  }
+  // Check new password length
+  if(newPw.length < 6){
+    document.getElementById('pwNewErr').style.display = 'block';
+    valid = false;
+  }
+  // Check confirmation match
+  if(newPw !== confirm){
+    document.getElementById('pwConfirmErr').style.display = 'block';
+    valid = false;
+  }
+
+  if(!valid) return;
+
+  // Save new password
+  localStorage.setItem('so_adm_p', newPw);
+  localStorage.setItem('so_adm_h', btoa(newPw));
+
+  // Clear inputs
+  document.getElementById('pwCurrent').value = '';
+  document.getElementById('pwNew').value = '';
+  document.getElementById('pwConfirm').value = '';
+
+  // Show success
+  document.getElementById('pwSuccess').style.display = 'block';
+  toast('Password changed successfully!', 'ok');
+}
+
+function clearAllLocal(){
+  if(!confirm('This will clear ALL local admin data including:\n• Saved password\n• GitHub token\n• Local form submissions\n• Locally edited JSON\n\nYou will be logged out. Continue?')) return;
+  const keys = ['so_admin','so_adm_p','so_adm_h','so_gh_token','so_gh_owner','so_gh_repo','so_gh_branch','so_submissions','so_site_data','so_pages_data'];
+  keys.forEach(k => localStorage.removeItem(k));
+  toast('All local data cleared. Logging out...', 'ok');
+  setTimeout(() => location.reload(), 1500);
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

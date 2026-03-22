@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Your Online Store — ShopOnline</title>
+  <meta name="description" content="Fill out this quick form to get started. We'll call you within 24 hours with a custom plan for your shop.">
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="container nav__inner">
+    <a href="/" class="nav__logo">Shop<span>Online</span></a>
+    <div class="nav__links">
+      <a href="/" class="nav__link">Home</a>
+      <a href="/pages/services.html" class="nav__link">Services</a>
+      <a href="/pages/works.html" class="nav__link">Portfolio</a>
+      <a href="/pages/pricing.html" class="nav__link">Pricing</a>
+      <a href="/pages/about.html" class="nav__link">About</a>
+      <a href="/pages/contact.html" class="nav__link">Contact</a>
+      <a href="/pages/client-form.html" class="btn btn-primary btn-sm nav__cta">Get Started →</a>
+    </div>
+    <div class="nav__hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+  <div class="nav__mobile" id="mobileMenu">
+    <a href="/" class="nav__link">Home</a>
+    <a href="/pages/services.html" class="nav__link">Services</a>
+    <a href="/pages/works.html" class="nav__link">Portfolio</a>
+    <a href="/pages/pricing.html" class="nav__link">Pricing</a>
+    <a href="/pages/about.html" class="nav__link">About</a>
+    <a href="/pages/contact.html" class="nav__link">Contact</a>
+    <a href="/pages/client-form.html" class="nav__link active">Get Started ✦</a>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="/">Home</a><span>›</span><span>Get Started</span></div>
+    <div class="hero__eyebrow" style="justify-content:center">Free Consultation • No Commitment</div>
+    <h1>Start Your <em style="color:var(--c-terra)">Online Store</em></h1>
+    <p>Fill out the form below. We'll call you within 24 hours with a custom plan and transparent pricing.</p>
+  </div>
+</div>
+
+<!-- Trust bar -->
+<div style="background:var(--c-surface);border-bottom:1px solid var(--c-line);padding:16px 0">
+  <div class="container">
+    <div style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap">
+      <span style="font-size:.85rem;color:var(--c-ink2);display:flex;align-items:center;gap:8px">✅ <strong>Free</strong> consultation</span>
+      <span style="font-size:.85rem;color:var(--c-ink2);display:flex;align-items:center;gap:8px">⚡ Reply within <strong>24 hours</strong></span>
+      <span style="font-size:.85rem;color:var(--c-ink2);display:flex;align-items:center;gap:8px">🔒 <strong>100% private</strong> — no spam</span>
+      <span style="font-size:.85rem;color:var(--c-ink2);display:flex;align-items:center;gap:8px">📞 <strong>WhatsApp</strong> response option</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Form Section -->
+<section class="section">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:56px;align-items:start" class="form-layout">
+      <!-- FORM -->
+      <div>
+        <div id="formSuccess" class="hidden" style="background:var(--c-green);color:#fff;padding:32px;border-radius:var(--r-md);text-align:center;margin-bottom:32px">
+          <div style="font-size:2.5rem;margin-bottom:16px">🎉</div>
+          <h3 style="color:#fff;margin-bottom:8px">Form Submitted Successfully!</h3>
+          <p style="color:rgba(255,255,255,.85)">We've received your details. Expect a WhatsApp/call within 24 hours. Check your email for a confirmation.</p>
+          <div id="promptSummaryBox" style="background:rgba(0,0,0,.2);border-radius:8px;padding:16px;margin-top:16px;text-align:left;font-size:.82rem;font-family:var(--font-mono);line-height:1.6"></div>
+        </div>
+
+        <form id="clientForm" novalidate>
+          <!-- Section 1: Personal Info -->
+          <div class="form-section mb-6">
+            <h3 style="margin-bottom:4px">1. About You & Your Shop</h3>
+            <p style="font-size:.88rem;color:var(--c-ink3);margin-bottom:24px">Let's get to know your business.</p>
+
+            <div class="grid-2 gap-3">
+              <div class="form-group">
+                <label class="form-label" for="name">Your Name <span>*</span></label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="Priya Mehta" required>
+                <div class="form-error" id="name-error">Please enter your name</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="shopName">Shop Name <span>*</span></label>
+                <input type="text" id="shopName" name="shopName" class="form-input" placeholder="Priya's Saree Palace" required>
+                <div class="form-error" id="shopName-error">Please enter your shop name</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="category">Shop Category <span>*</span></label>
+              <select id="category" name="category" class="form-select" required>
+                <option value="">Select your shop category...</option>
+                <option value="Fashion & Clothing">👗 Fashion & Clothing</option>
+                <option value="Food & Restaurant">🍛 Food & Restaurant</option>
+                <option value="Electronics">📱 Electronics</option>
+                <option value="Grocery & Supermarket">🛒 Grocery & Supermarket</option>
+                <option value="Jewellery">💍 Jewellery</option>
+                <option value="Home Decor & Furniture">🏠 Home Decor & Furniture</option>
+                <option value="Pharmacy & Healthcare">💊 Pharmacy & Healthcare</option>
+                <option value="Books & Stationery">📚 Books & Stationery</option>
+                <option value="Bakery & Sweets">🍮 Bakery & Sweets</option>
+                <option value="Flowers & Gifts">🌸 Flowers & Gifts</option>
+                <option value="Automotive">🚗 Automotive Parts</option>
+                <option value="Sports & Fitness">🏋️ Sports & Fitness</option>
+                <option value="Plants & Garden">🌿 Plants & Nursery</option>
+                <option value="Salon & Beauty">💄 Salon & Beauty</option>
+                <option value="Education & Coaching">📖 Education & Coaching</option>
+                <option value="Hardware & Tools">🔧 Hardware & Tools</option>
+                <option value="Other">✏️ Other (specify below)</option>
+              </select>
+              <div class="form-error" id="category-error">Please select a category</div>
+            </div>
+
+            <div class="form-group" id="categoryOtherGroup" style="display:none">
+              <label class="form-label" for="categoryOther">Specify Your Category <span>*</span></label>
+              <input type="text" id="categoryOther" name="categoryOther" class="form-input" placeholder="e.g. Pet Supplies, Musical Instruments...">
+            </div>
+
+            <div class="grid-2 gap-3">
+              <div class="form-group">
+                <label class="form-label" for="whatsapp">WhatsApp Number <span>*</span></label>
+                <input type="tel" id="whatsapp" name="whatsapp" class="form-input" placeholder="+91 98765 43210" required>
+                <div class="form-hint">We'll contact you on WhatsApp first</div>
+                <div class="form-error" id="whatsapp-error">Please enter a valid phone number</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="email">Email Address <span>*</span></label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="you@yourshop.com" required>
+                <div class="form-error" id="email-error">Please enter a valid email</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="location">Shop Location <span>*</span></label>
+              <input type="text" id="location" name="location" class="form-input" placeholder="City, State (e.g. Surat, Gujarat)" required>
+              <div class="form-error" id="location-error">Please enter your location</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 2: Website Requirements -->
+          <div class="form-section mb-6">
+            <h3 style="margin-bottom:4px">2. Website Requirements</h3>
+            <p style="font-size:.88rem;color:var(--c-ink3);margin-bottom:24px">Tell us what pages and features your store needs.</p>
+
+            <div class="form-group">
+              <label class="form-label">Pages Required</label>
+              <div class="checkbox-group" id="pagesCheckboxes">
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Home">
+                  <span><strong>Home Page</strong><br><small>Landing / welcome page</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Products / Catalogue">
+                  <span><strong>Products / Catalogue</strong><br><small>Showcase your items</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="About Us">
+                  <span><strong>About Us</strong><br><small>Your story and team</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Contact">
+                  <span><strong>Contact Page</strong><br><small>Map, form, details</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Online Ordering">
+                  <span><strong>Online Ordering</strong><br><small>Cart + checkout</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Blog / News">
+                  <span><strong>Blog / News</strong><br><small>Articles and updates</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Gallery">
+                  <span><strong>Gallery</strong><br><small>Photo showcases</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="pages" value="Appointments / Booking">
+                  <span><strong>Appointments / Booking</strong><br><small>Schedule system</small></span>
+                </label>
+              </div>
+              <div class="form-group mt-3">
+                <label class="form-label" for="customPages">Any other pages?</label>
+                <input type="text" id="customPages" name="customPages" class="form-input" placeholder="e.g. Testimonials, FAQ, Team, Offers...">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Extra Features Required</label>
+              <div class="checkbox-group">
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="googleMaps">
+                  <span><strong>📍 Google Maps</strong><br><small>Show your location</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="socialMedia">
+                  <span><strong>📱 Social Media</strong><br><small>Instagram/FB links</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="chatbot">
+                  <span><strong>🤖 AI Chatbot</strong><br><small>24/7 auto-replies</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="maintenance">
+                  <span><strong>🔧 Monthly Maintenance</strong><br><small>Ongoing updates</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="seo">
+                  <span><strong>🔍 SEO Optimization</strong><br><small>Rank on Google</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="upiPayments">
+                  <span><strong>💳 UPI / Card Payments</strong><br><small>Accept online orders</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="whatsappOrdering">
+                  <span><strong>💬 WhatsApp Ordering</strong><br><small>Order via WhatsApp</small></span>
+                </label>
+                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                  <input type="checkbox" name="features" value="multiLanguage">
+                  <span><strong>🌐 Multi-Language</strong><br><small>Hindi/Regional lang</small></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 3: Budget & Timeline -->
+          <div class="form-section mb-6">
+            <h3 style="margin-bottom:4px">3. Budget & Timeline</h3>
+            <p style="font-size:.88rem;color:var(--c-ink3);margin-bottom:24px">Help us recommend the right plan for you.</p>
+
+            <div class="form-group">
+              <label class="form-label">Budget Range <span>*</span></label>
+              <div class="checkbox-group" id="budgetOptions" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+                <label class="checkbox-item budget-option" onclick="selectBudget(this,'Under ₹5,000')">
+                  <input type="radio" name="budget" value="Under ₹5,000">
+                  <span><strong>Under ₹5,000</strong><br><small>Basic catalogue</small></span>
+                </label>
+                <label class="checkbox-item budget-option" onclick="selectBudget(this,'₹5,000 – ₹10,000')">
+                  <input type="radio" name="budget" value="₹5,000 – ₹10,000">
+                  <span><strong>₹5k – ₹10k</strong><br><small>Starter plan</small></span>
+                </label>
+                <label class="checkbox-item budget-option" onclick="selectBudget(this,'₹10,000 – ₹20,000')">
+                  <input type="radio" name="budget" value="₹10,000 – ₹20,000">
+                  <span><strong>₹10k – ₹20k</strong><br><small>Growth plan</small></span>
+                </label>
+                <label class="checkbox-item budget-option" onclick="selectBudget(this,'₹20,000+')">
+                  <input type="radio" name="budget" value="₹20,000+">
+                  <span><strong>₹20,000+</strong><br><small>Full pro store</small></span>
+                </label>
+                <label class="checkbox-item budget-option" onclick="selectBudget(this,'Not Sure')">
+                  <input type="radio" name="budget" value="Not Sure">
+                  <span><strong>Not Sure</strong><br><small>Help me decide</small></span>
+                </label>
+              </div>
+              <div class="form-error" id="budget-error">Please select a budget range</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="timeline">Desired Timeline</label>
+              <select id="timeline" name="timeline" class="form-select">
+                <option value="">When do you want to go live?</option>
+                <option value="ASAP (1-3 days)">⚡ ASAP (1–3 days, rush fee applies)</option>
+                <option value="1 week">📅 Within 1 week (standard)</option>
+                <option value="2 weeks">📆 Within 2 weeks</option>
+                <option value="1 month">🗓️ Within 1 month</option>
+                <option value="Flexible">✅ Flexible / No rush</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section 4: Additional Info -->
+          <div class="form-section mb-6">
+            <h3 style="margin-bottom:4px">4. Tell Us More</h3>
+            <p style="font-size:.88rem;color:var(--c-ink3);margin-bottom:24px">Any specific requirements, inspiration, or questions?</p>
+
+            <div class="form-group">
+              <label class="form-label" for="additionalRequirements">Additional Requirements</label>
+              <textarea id="additionalRequirements" name="additionalRequirements" class="form-textarea" placeholder="e.g. I want a dark theme, need Hindi language support, want to integrate with our Zoho CRM, have 200 products to add...&#10;&#10;Or share a website you love as reference..." style="min-height:160px"></textarea>
+              <div class="form-hint">More detail = better, faster results for you</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="referenceUrl">Reference Website URL (Optional)</label>
+              <input type="url" id="referenceUrl" name="referenceUrl" class="form-input" placeholder="https://website-i-like.com">
+              <div class="form-hint">Share any website whose design or features you admire</div>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-item" onclick="toggleCheckbox(this)" style="cursor:pointer;width:auto">
+                <input type="checkbox" id="termsAccept" name="termsAccept" required>
+                <span>I agree to the <a href="/pages/privacy.html" style="color:var(--c-terra)">Privacy Policy</a> and consent to being contacted about my enquiry. <span style="color:var(--c-terra)">*</span></span>
+              </label>
+              <div class="form-error" id="terms-error">Please accept the terms to continue</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" style="flex:1;min-width:220px">
+              <span id="submitText">Submit & Get Free Consultation →</span>
+              <span id="submitLoader" class="loader hidden"></span>
+            </button>
+            <a href="https://wa.me/919876543210" class="btn btn-ghost btn-lg" style="background:#25D366;color:#fff;border-color:#25D366">💬 Chat Instead</a>
+          </div>
+          <p style="font-size:.78rem;color:var(--c-ink3);margin-top:12px">🔒 Your information is 100% private and will never be shared or sold.</p>
+        </form>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="form-sidebar" style="position:sticky;top:90px">
+        <div class="card mb-4">
+          <h4 style="margin-bottom:16px">📱 Prefer WhatsApp?</h4>
+          <p style="font-size:.88rem;color:var(--c-ink2);margin-bottom:16px">Message us directly and we'll guide you through the process in your language.</p>
+          <a href="https://wa.me/919876543210?text=Hi!%20I%20want%20to%20take%20my%20shop%20online." class="btn btn-primary w-full" style="background:#25D366;border-color:#25D366">💬 WhatsApp Us Now</a>
+        </div>
+
+        <div class="card mb-4" style="background:var(--c-ink);color:#fff;border-color:transparent">
+          <h4 style="color:#fff;margin-bottom:12px">What Happens Next?</h4>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="background:var(--c-terra);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">1</span>
+              <span style="font-size:.85rem;color:rgba(255,255,255,.8)">We receive your form instantly</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="background:var(--c-terra);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">2</span>
+              <span style="font-size:.85rem;color:rgba(255,255,255,.8)">Call/WhatsApp within 24 hours</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="background:var(--c-terra);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">3</span>
+              <span style="font-size:.85rem;color:rgba(255,255,255,.8)">Free custom proposal sent</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="background:var(--c-terra);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">4</span>
+              <span style="font-size:.85rem;color:rgba(255,255,255,.8)">Your store goes live in 7 days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="testimonial-card__stars" style="color:var(--c-gold)">★★★★★</div>
+          <p style="font-size:.85rem;color:var(--c-ink2);font-style:italic;margin-bottom:12px">"Filled the form at night. Got a call by morning. Store launched in 6 days!"</p>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;background:var(--c-terra);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.8rem">PM</div>
+            <div>
+              <div style="font-size:.82rem;font-weight:600">Priya Mehta</div>
+              <div style="font-size:.75rem;color:var(--c-ink3)">Saree Palace, Surat</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" style="background:var(--c-surface)">
+  <div class="container">
+    <div class="text-center mb-6 fade-up">
+      <div class="section-label">FAQs</div>
+      <h2>Common Questions</h2>
+    </div>
+    <div style="max-width:720px;margin:0 auto" id="faqContainer">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand"><h3>Shop<span>Online</span></h3><p>Transforming local shops into thriving online businesses.</p></div>
+      <div class="footer__col"><h4>Pages</h4><a href="/pages/services.html">Services</a><a href="/pages/works.html">Portfolio</a><a href="/pages/pricing.html">Pricing</a><a href="/pages/about.html">About</a></div>
+      <div class="footer__col"><h4>Legal</h4><a href="/pages/privacy.html">Privacy Policy</a></div>
+      <div class="footer__col"><h4>Contact</h4><a href="mailto:hello@shoponline.in">📧 hello@shoponline.in</a><a href="https://wa.me/919876543210">💬 WhatsApp</a></div>
+    </div>
+    <div class="footer__bottom"><span>© 2024 ShopOnline. All rights reserved.</span></div>
+  </div>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/assets/js/core.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+// --- Utility: Toggle checkbox styling ---
+function toggleCheckbox(label) {
+  const input = label.querySelector('input[type="checkbox"]');
+  if (input) {
+    setTimeout(() => label.classList.toggle('checked', input.checked), 0);
+  }
+}
+
+// --- Budget radio (single select styled) ---
+function selectBudget(label, val) {
+  document.querySelectorAll('.budget-option').forEach(l => l.classList.remove('checked'));
+  setTimeout(() => {
+    const inp = label.querySelector('input[type="radio"]');
+    if (inp) { inp.checked = true; label.classList.add('checked'); }
+  }, 0);
+}
+
+// --- Category other ---
+document.getElementById('category').addEventListener('change', function() {
+  document.getElementById('categoryOtherGroup').style.display = this.value === 'Other' ? 'block' : 'none';
+});
+
+// --- Pre-select plan from URL ---
+(function() {
+  const plan = new URLSearchParams(window.location.search).get('plan');
+  if (plan) {
+    const budgetMap = { starter: '₹5,000 – ₹10,000', growth: '₹5,000 – ₹10,000', pro: '₹20,000+' };
+    const budget = budgetMap[plan];
+    if (budget) {
+      const opt = document.querySelector(`.budget-option input[value="${budget}"]`);
+      if (opt) { opt.checked = true; opt.closest('.budget-option').classList.add('checked'); }
+    }
+  }
+})();
+
+// --- FAQ ---
+(async function() {
+  const pages = await fetch('/data/pages.json').then(r=>r.json()).catch(()=>({}));
+  const faqC = document.getElementById('faqContainer');
+  if (faqC && pages.contact?.faq) {
+    faqC.innerHTML = pages.contact.faq.map((f,i) => `
+      <div class="card fade-up" style="margin-bottom:12px;cursor:pointer" onclick="this.querySelector('.faq-answer').style.display=this.querySelector('.faq-answer').style.display==='none'?'block':'none'">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong style="font-size:.95rem">${f.q}</strong>
+          <span style="color:var(--c-terra)">▾</span>
+        </div>
+        <div class="faq-answer" style="display:none;margin-top:12px;font-size:.88rem;color:var(--c-ink2)">${f.a}</div>
+      </div>`).join('');
+    ScrollAnim.init();
+  }
+})();
+
+// --- Generate prompt summary ---
+function generatePromptSummary(data) {
+  const pages = data.pages.length ? data.pages.join(', ') : 'Not specified';
+  const features = Object.entries(data.features).filter(([,v])=>v).map(([k])=>k).join(', ') || 'None';
+  return `PROJECT BRIEF — Auto-generated by ShopOnline Form
+=====================================
+Client: ${data.name}
+Shop: ${data.shopName}
+Category: ${data.category}
+Location: ${data.location}
+Contact: ${data.whatsapp} | ${data.email}
+=====================================
+Pages Required: ${pages}
+Custom Pages: ${data.customPages || 'None'}
+Extra Features: ${features}
+Budget: ${data.budget}
+Timeline: ${data.timeline || 'Flexible'}
+=====================================
+Additional Requirements:
+${data.additionalRequirements || 'None provided'}
+
+Reference URL: ${data.referenceUrl || 'None'}
+=====================================
+Submitted: ${new Date().toLocaleString('en-IN')}`;
+}
+
+// --- Validation ---
+function validateForm() {
+  let valid = true;
+  const required = [
+    { id: 'name', err: 'name-error', check: v => v.trim().length > 1 },
+    { id: 'shopName', err: 'shopName-error', check: v => v.trim().length > 1 },
+    { id: 'category', err: 'category-error', check: v => v !== '' },
+    { id: 'whatsapp', err: 'whatsapp-error', check: v => /^[\+\d\s\-]{8,16}$/.test(v.trim()) },
+    { id: 'email', err: 'email-error', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+    { id: 'location', err: 'location-error', check: v => v.trim().length > 2 },
+  ];
+  required.forEach(f => {
+    const el = document.getElementById(f.id);
+    const errEl = document.getElementById(f.err);
+    if (el && errEl) {
+      const ok = f.check(el.value);
+      errEl.classList.toggle('show', !ok);
+      if (!ok) { valid = false; if (!document._firstErr) { document._firstErr = el; } }
+    }
+  });
+  // Budget
+  const budget = document.querySelector('input[name="budget"]:checked');
+  document.getElementById('budget-error').classList.toggle('show', !budget);
+  if (!budget) valid = false;
+  // Terms
+  const terms = document.getElementById('termsAccept');
+  document.getElementById('terms-error').classList.toggle('show', !terms.checked);
+  if (!terms.checked) valid = false;
+  return valid;
+}
+
+// --- Submit ---
+document.getElementById('clientForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  document._firstErr = null;
+  if (!validateForm()) {
+    if (document._firstErr) document._firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  const txt = document.getElementById('submitText');
+  const loader = document.getElementById('submitLoader');
+  btn.disabled = true; txt.classList.add('hidden'); loader.classList.remove('hidden');
+
+  // Gather data
+  const getChecked = name => [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i=>i.value);
+  const features = {};
+  getChecked('features').forEach(f => features[f] = true);
+
+  const formData = {
+    id: 'c_' + Date.now(),
+    timestamp: new Date().toISOString(),
+    name: document.getElementById('name').value.trim(),
+    shopName: document.getElementById('shopName').value.trim(),
+    category: document.getElementById('category').value === 'Other'
+      ? document.getElementById('categoryOther').value.trim()
+      : document.getElementById('category').value,
+    whatsapp: document.getElementById('whatsapp').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    location: document.getElementById('location').value.trim(),
+    pages: getChecked('pages'),
+    customPages: document.getElementById('customPages').value.trim(),
+    features,
+    budget: document.querySelector('input[name="budget"]:checked')?.value || 'Not specified',
+    timeline: document.getElementById('timeline').value,
+    additionalRequirements: document.getElementById('additionalRequirements').value.trim(),
+    referenceUrl: document.getElementById('referenceUrl').value.trim(),
+    status: 'new'
+  };
+  formData.promptSummary = generatePromptSummary(formData);
+
+  // Load site config
+  let siteConfig = {};
+  try { siteConfig = await fetch('/data/site.json').then(r=>r.json()); } catch(e) {}
+
+  // 1. Google Sheets webhook
+  if (siteConfig.features?.googleSheetsWebhook && !siteConfig.features.googleSheetsWebhook.startsWith('YOUR_')) {
+    try {
+      await fetch(siteConfig.features.googleSheetsWebhook, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+    } catch (err) { console.warn('Sheets webhook failed:', err); }
+  }
+
+  // 2. EmailJS notification
+  if (siteConfig.features?.emailjsPublicKey && !siteConfig.features.emailjsPublicKey.startsWith('YOUR_')) {
+    try {
+      emailjs.init(siteConfig.features.emailjsPublicKey);
+      await emailjs.send(
+        siteConfig.features.emailjsServiceId,
+        siteConfig.features.emailjsTemplateId,
+        {
+          to_email: siteConfig.contact?.email || 'hello@shoponline.in',
+          client_name: formData.name,
+          client_email: formData.email,
+          shop_name: formData.shopName,
+          category: formData.category,
+          whatsapp: formData.whatsapp,
+          location: formData.location,
+          budget: formData.budget,
+          prompt_summary: formData.promptSummary
+        }
+      );
+    } catch(err) { console.warn('EmailJS failed:', err); }
+  }
+
+  // 3. Store in localStorage as fallback
+  try {
+    const existing = JSON.parse(localStorage.getItem('so_submissions') || '[]');
+    existing.push(formData);
+    localStorage.setItem('so_submissions', JSON.stringify(existing));
+  } catch(e) {}
+
+  // Show success
+  btn.disabled = false; txt.classList.remove('hidden'); loader.classList.add('hidden');
+  document.getElementById('clientForm').style.display = 'none';
+  const successBox = document.getElementById('formSuccess');
+  successBox.classList.remove('hidden');
+  document.getElementById('promptSummaryBox').textContent = formData.promptSummary;
+  successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  Toast.show('Form submitted! We\'ll contact you within 24 hours.', 'success', 6000);
+});
+</script>
+</body>
+</html>

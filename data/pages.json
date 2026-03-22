@@ -1,0 +1,307 @@
+{
+  "services": {
+    "headline": "Everything You Need to Go Online",
+    "subhead": "From a simple catalogue to a full e-commerce store — we do it all.",
+    "items": [
+      {
+        "id": "s1",
+        "icon": "🛒",
+        "title": "E-Commerce Store",
+        "description": "Full online shop with product listings, cart, payments, and order management. Supports UPI, cards, and COD.",
+        "features": ["Product catalogue", "Cart & checkout", "UPI/Card payments", "Order tracking"]
+      },
+      {
+        "id": "s2",
+        "icon": "📋",
+        "title": "Product Catalogue",
+        "description": "A beautiful digital menu or product catalogue. Perfect for restaurants, boutiques, and service businesses.",
+        "features": ["Unlimited products", "Category filters", "WhatsApp enquiry", "PDF export"]
+      },
+      {
+        "id": "s3",
+        "icon": "📍",
+        "title": "Google Maps & Local SEO",
+        "description": "Get found on Google Maps. We optimize your listing and build local search presence.",
+        "features": ["Google Business setup", "Local SEO", "Review management", "Map embed"]
+      },
+      {
+        "id": "s4",
+        "icon": "💬",
+        "title": "WhatsApp Integration",
+        "description": "Let customers order directly on WhatsApp. Auto-reply, product sharing, and order confirmation.",
+        "features": ["Click-to-WhatsApp", "Catalogue share", "Auto-reply setup", "Broadcast support"]
+      },
+      {
+        "id": "s5",
+        "icon": "📱",
+        "title": "Social Media Setup",
+        "description": "Instagram, Facebook, and Google Ads pages configured and linked to your online store.",
+        "features": ["Facebook Shop", "Instagram tags", "Pixel setup", "Ad templates"]
+      },
+      {
+        "id": "s6",
+        "icon": "🤖",
+        "title": "AI Chatbot",
+        "description": "24/7 customer support chatbot that answers FAQs, takes orders, and collects leads automatically.",
+        "features": ["FAQ answers", "Lead capture", "Product search", "Multi-language"]
+      },
+      {
+        "id": "s7",
+        "icon": "🔒",
+        "title": "Monthly Maintenance",
+        "description": "Keep your store running smoothly. Product updates, security patches, backups, and priority support.",
+        "features": ["Content updates", "Performance checks", "Daily backups", "Priority support"]
+      },
+      {
+        "id": "s8",
+        "icon": "📊",
+        "title": "Analytics & Reports",
+        "description": "Understand your customers. Sales reports, visitor insights, and conversion tracking.",
+        "features": ["Sales dashboard", "Visitor analytics", "Conversion tracking", "Monthly report"]
+      }
+    ]
+  },
+
+  "portfolio": {
+    "headline": "Shops We've Taken Online",
+    "subhead": "Real businesses, real results. Here's a sample of our recent work.",
+    "items": [
+      {
+        "id": "p1",
+        "title": "Ritu's Boutique",
+        "category": "Fashion & Clothing",
+        "description": "A beautiful fashion e-commerce store for a Surat-based boutique. 3x revenue growth in 2 months.",
+        "image": "🛍️",
+        "imageColor": "#f8e8d4",
+        "link": "#",
+        "tags": ["E-Commerce", "Fashion", "UPI Payments"]
+      },
+      {
+        "id": "p2",
+        "title": "Masala Palace Restaurant",
+        "category": "Food & Dining",
+        "description": "Online menu and ordering system for a local restaurant. Now gets 60+ online orders per day.",
+        "image": "🍛",
+        "imageColor": "#fde8d0",
+        "link": "#",
+        "tags": ["Food Menu", "Ordering", "WhatsApp"]
+      },
+      {
+        "id": "p3",
+        "title": "Sharma Electronics",
+        "category": "Electronics",
+        "description": "Full product catalogue with WhatsApp enquiry. Ranked #1 for local searches in 45 days.",
+        "image": "📱",
+        "imageColor": "#e0eef8",
+        "link": "#",
+        "tags": ["Catalogue", "Local SEO", "WhatsApp"]
+      },
+      {
+        "id": "p4",
+        "title": "GreenLeaf Nursery",
+        "category": "Plants & Garden",
+        "description": "Online plant shop with seasonal collections, care guides, and home delivery booking.",
+        "image": "🌿",
+        "imageColor": "#d8f0e4",
+        "link": "#",
+        "tags": ["E-Commerce", "Booking", "Blog"]
+      },
+      {
+        "id": "p5",
+        "title": "Dr. Patel's Clinic",
+        "category": "Healthcare",
+        "description": "Appointment booking website with patient FAQs and Google Maps integration.",
+        "image": "🏥",
+        "imageColor": "#e8f4ff",
+        "link": "#",
+        "tags": ["Booking", "Healthcare", "Google Maps"]
+      },
+      {
+        "id": "p6",
+        "title": "Sweets of India",
+        "category": "Bakery & Sweets",
+        "description": "Festival sweet box ordering with pre-order, custom messages, and city-wide delivery.",
+        "image": "🍮",
+        "imageColor": "#fef3d0",
+        "link": "#",
+        "tags": ["E-Commerce", "Pre-order", "Delivery"]
+      }
+    ]
+  },
+
+  "pricing": {
+    "headline": "Simple, Transparent Pricing",
+    "subhead": "Pick a plan that fits your shop. No hidden fees, no surprises.",
+    "currency": "₹",
+    "plans": [
+      {
+        "id": "starter",
+        "name": "Starter",
+        "price": 4999,
+        "period": "one-time",
+        "description": "Perfect for shops starting their online journey",
+        "featured": false,
+        "badge": null,
+        "features": [
+          { "text": "5-page website", "included": true },
+          { "text": "Product catalogue (up to 30)", "included": true },
+          { "text": "WhatsApp enquiry button", "included": true },
+          { "text": "Google Maps integration", "included": true },
+          { "text": "Mobile responsive design", "included": true },
+          { "text": "1-month free support", "included": true },
+          { "text": "Online payments", "included": false },
+          { "text": "AI Chatbot", "included": false },
+          { "text": "Monthly maintenance", "included": false }
+        ],
+        "cta": "Get Starter Plan"
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "price": 9999,
+        "period": "one-time",
+        "description": "For shops ready to sell online seriously",
+        "featured": true,
+        "badge": "Most Popular",
+        "features": [
+          { "text": "10-page website", "included": true },
+          { "text": "Unlimited products", "included": true },
+          { "text": "Online payments (UPI/Cards)", "included": true },
+          { "text": "Google Maps + Local SEO", "included": true },
+          { "text": "Social media integration", "included": true },
+          { "text": "WhatsApp order system", "included": true },
+          { "text": "3-month free support", "included": true },
+          { "text": "AI Chatbot", "included": false },
+          { "text": "Monthly maintenance", "included": false }
+        ],
+        "cta": "Get Growth Plan"
+      },
+      {
+        "id": "pro",
+        "name": "Pro",
+        "price": 18999,
+        "period": "one-time + ₹1499/mo",
+        "description": "The complete package for serious shop owners",
+        "featured": false,
+        "badge": "Best Value",
+        "features": [
+          { "text": "Unlimited pages", "included": true },
+          { "text": "Unlimited products", "included": true },
+          { "text": "Full e-commerce store", "included": true },
+          { "text": "AI Chatbot included", "included": true },
+          { "text": "Monthly maintenance", "included": true },
+          { "text": "Priority support (24hr)", "included": true },
+          { "text": "Analytics dashboard", "included": true },
+          { "text": "Google + Facebook Ads setup", "included": true },
+          { "text": "Dedicated manager", "included": true }
+        ],
+        "cta": "Get Pro Plan"
+      }
+    ]
+  },
+
+  "howItWorks": {
+    "headline": "From Meeting to Live Store in 7 Days",
+    "steps": [
+      { "num": "01", "title": "Fill the Form", "desc": "Tell us about your shop, requirements, and budget. Takes 5 minutes." },
+      { "num": "02", "title": "Discovery Call", "desc": "We call you within 24 hours to understand your vision and finalize the plan." },
+      { "num": "03", "title": "Design & Build", "desc": "Our team designs your store. You get a preview link to review before launch." },
+      { "num": "04", "title": "Review & Revise", "desc": "Two rounds of free revisions. We refine until you're 100% happy." },
+      { "num": "05", "title": "Go Live!", "desc": "Your store launches. We train you to manage it and handle orders." },
+      { "num": "06", "title": "Ongoing Support", "desc": "We're here. Updates, issues, new features — just message us anytime." }
+    ]
+  },
+
+  "testimonials": [
+    {
+      "id": "t1",
+      "name": "Priya Mehta",
+      "role": "Owner, Priya's Saree Palace",
+      "location": "Surat, Gujarat",
+      "text": "I had no idea how to go online. The ShopOnline team set everything up in 5 days. Now I get orders from all over Gujarat! My sales doubled in the first month.",
+      "stars": 5,
+      "avatar": "PM"
+    },
+    {
+      "id": "t2",
+      "name": "Raj Kumar",
+      "role": "Owner, Kumar Hardware Store",
+      "location": "Pune, Maharashtra",
+      "text": "Very professional team. They understood exactly what I needed. The WhatsApp integration is incredible — customers just message and order. Game changer.",
+      "stars": 5,
+      "avatar": "RK"
+    },
+    {
+      "id": "t3",
+      "name": "Sunita Joshi",
+      "role": "Owner, Sunita's Kitchen",
+      "location": "Jaipur, Rajasthan",
+      "text": "My tiffin service was word-of-mouth only. Now I have a proper website with online orders. The chatbot handles enquiries while I cook! Highly recommended.",
+      "stars": 5,
+      "avatar": "SJ"
+    },
+    {
+      "id": "t4",
+      "name": "Aditya Shah",
+      "role": "Owner, Shah Electronics",
+      "location": "Ahmedabad, Gujarat",
+      "text": "SEO improved so much after the website launch. We now rank on Google for local searches. The team also helped with Facebook ads. Worth every rupee.",
+      "stars": 5,
+      "avatar": "AS"
+    },
+    {
+      "id": "t5",
+      "name": "Meena Reddy",
+      "role": "Owner, Meena Flowers & Gifts",
+      "location": "Hyderabad, Telangana",
+      "text": "Beautiful website! The portfolio section showcases my arrangements so well. Festival season orders increased by 180%. Amazing value for the price.",
+      "stars": 5,
+      "avatar": "MR"
+    },
+    {
+      "id": "t6",
+      "name": "Vikram Patel",
+      "role": "Owner, Patel Medical",
+      "location": "Ahmedabad, Gujarat",
+      "text": "The appointment booking system saves us so much time. Patients can book 24/7 and get reminders. Professional website that builds trust instantly.",
+      "stars": 5,
+      "avatar": "VP"
+    }
+  ],
+
+  "about": {
+    "headline": "We're on a Mission to Digitize India's Local Economy",
+    "story": "ShopOnline was founded in 2022 by a team of designers and developers who grew up watching their family's local shops struggle to compete with big e-commerce giants. We realized that local shop owners had amazing products and loyal customers — they just lacked an online presence.\n\nSo we built a service that makes going online as simple as a WhatsApp message. No technical knowledge required. No months of waiting. Just a beautiful, functional online store, ready in 7 days.",
+    "team": [
+      { "name": "Arjun Desai", "role": "Founder & Lead Developer", "avatar": "AD", "bio": "Full-stack developer with 8 years experience. Built 200+ websites." },
+      { "name": "Kavya Shah", "role": "UI/UX Designer", "avatar": "KS", "bio": "Designer specializing in e-commerce and conversion optimization." },
+      { "name": "Rohan Patel", "role": "Digital Marketing", "avatar": "RP", "bio": "SEO and social media expert. Helped 50+ local businesses rank on Google." },
+      { "name": "Priti Nair", "role": "Client Success Manager", "avatar": "PN", "bio": "Ensures every client is trained, supported, and happy with their store." }
+    ],
+    "values": [
+      { "icon": "⚡", "title": "Speed", "desc": "7-day delivery. We move fast without cutting corners." },
+      { "icon": "💰", "title": "Affordability", "desc": "Premium quality at local business prices. Fair, always." },
+      { "icon": "🤝", "title": "Partnership", "desc": "We're not just vendors. We're your digital business partners." },
+      { "icon": "📞", "title": "Support", "desc": "Real humans, real help. WhatsApp or call us anytime." }
+    ],
+    "stats": [
+      { "num": "150+", "label": "Shops Online" },
+      { "num": "₹2Cr+", "label": "Revenue Generated for Clients" },
+      { "num": "98%", "label": "Client Satisfaction Rate" },
+      { "num": "7", "label": "States Served" }
+    ]
+  },
+
+  "contact": {
+    "headline": "Let's Talk About Your Shop",
+    "subhead": "We're real people. Reach us on WhatsApp for the fastest response.",
+    "faq": [
+      { "q": "How long does it take to build my store?", "a": "Most stores are ready within 5–7 working days after we receive all your content (product photos, descriptions, etc.)." },
+      { "q": "Do I need to provide product photos?", "a": "Yes, but we can guide you on how to take good photos with your phone. We also offer basic photo editing included." },
+      { "q": "What happens after the site launches?", "a": "All plans include post-launch support. Starter gets 1 month, Growth gets 3 months, and Pro includes ongoing monthly maintenance." },
+      { "q": "Can I update the website myself?", "a": "Yes! We provide a simple admin panel and training. Or you can WhatsApp us updates at any time." },
+      { "q": "Do you work with all types of shops?", "a": "Absolutely. We've built stores for clothing, food, electronics, healthcare, education, agriculture, and much more." },
+      { "q": "Is payment secure on my store?", "a": "Yes. We integrate Razorpay or Cashfree — trusted, PCI-compliant payment gateways used by millions of Indian businesses." }
+    ]
+  }
+}
