@@ -1003,7 +1003,6 @@ function saveGitHub(){
 }
 
 async function testGitHub(){
-  // Always save first so we test what's in the fields right now
   saveGitHub();
 
   const token  = S.githubToken || localStorage.getItem('so_gh_token');
@@ -1014,69 +1013,119 @@ async function testGitHub(){
   const result = document.getElementById('ghTestResult');
 
   if(!token || !owner || !repo){
-    result.innerHTML = '<span style="color:var(--err)">❌ Fill in all fields first</span>';
+    result.innerHTML = showTestErr('Fill in Token, Username, Repo Name, and Branch first.');
     return;
   }
 
   btn.disabled = true;
   btn.textContent = 'Testing...';
-  result.innerHTML = '<span style="color:var(--gold)">⏳ Checking...</span>';
+  result.innerHTML = '<div style="color:var(--gold);font-size:.78rem">⏳ Connecting to GitHub...</div>';
 
+  // GitHub API fully supports CORS — requests from any origin work fine
+  // "Failed to fetch" = network-level block (offline, firewall, or token issue pre-flight)
   const headers = {
-    'Authorization': `Bearer ${token}`,
+    'Authorization': `token ${token}`,   // "token" prefix works for all token types
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28'
   };
 
+  // Helper: distinguish network error from API error
+  async function ghFetch(url){
+    let res;
+    try {
+      res = await fetch(url, { headers });
+    } catch(networkErr){
+      // TypeError: Failed to fetch = browser blocked the request
+      const isOffline = !navigator.onLine;
+      throw new Error(
+        isOffline
+          ? 'No internet connection. Check your network and try again.'
+          : 'Network error — browser blocked the request.\n\n' +
+            'This can happen if:\n' +
+            '• Your token contains invalid characters or spaces\n' +
+            '• A browser extension is blocking the request\n' +
+            '• You are behind a corporate firewall/proxy\n\n' +
+            'Try: Open DevTools → Network tab → click Test Connection again → see the failed request for details.'
+      );
+    }
+    return res;
+  }
+
   try {
-    // Test 1: Token valid?
-    const userRes = await fetch('https://api.github.com/user', { headers });
+    // Step 1: Validate token
+    const userRes = await ghFetch('https://api.github.com/user');
+    if(userRes.status === 401){
+      throw new Error('Token is invalid or expired.\n\nFix: Go to github.com → Settings → Developer Settings → Personal Access Tokens → regenerate your token, then paste it again here.');
+    }
+    if(userRes.status === 403){
+      throw new Error('Token exists but has no permission to read user info.\n\nFix: Regenerate your token and make sure "Contents: Read & Write" is selected.');
+    }
     if(!userRes.ok){
-      const d = await userRes.json().catch(()=>({}));
-      throw new Error(`Token invalid: ${d.message || userRes.status}`);
+      throw new Error(`GitHub returned HTTP ${userRes.status}. Try again in a moment.`);
     }
     const user = await userRes.json();
 
-    // Test 2: Repo accessible?
-    const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+    // Step 2: Check repo exists and is accessible
+    const repoRes = await ghFetch(`https://api.github.com/repos/${owner}/${repo}`);
+    if(repoRes.status === 404){
+      throw new Error(
+        `Repo "${owner}/${repo}" not found.\n\n` +
+        `Fix checklist:\n` +
+        `• Username/Org: "${owner}" — must match exactly (case-sensitive)\n` +
+        `• Repo Name: "${repo}" — must match exactly (case-sensitive)\n` +
+        `• For fine-grained tokens: the repo must be explicitly listed in the token's repo access`
+      );
+    }
+    if(repoRes.status === 403){
+      throw new Error(`Token has no access to repo "${owner}/${repo}".\n\nFor fine-grained tokens: go to your token settings on GitHub and add "${repo}" to the selected repositories.`);
+    }
     if(!repoRes.ok){
-      const d = await repoRes.json().catch(()=>({}));
-      if(repoRes.status === 404) throw new Error(`Repo "${owner}/${repo}" not found. Check spelling — it's case-sensitive.`);
-      if(repoRes.status === 403) throw new Error(`No access to repo "${owner}/${repo}". Add this repo to your token's permissions.`);
-      throw new Error(`Repo error (${repoRes.status}): ${d.message}`);
+      throw new Error(`Repo check failed (HTTP ${repoRes.status}).`);
     }
     const repoData = await repoRes.json();
-    const defaultBranch = repoData.default_branch;
 
-    // Test 3: Branch exists?
-    const branchRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`, { headers });
+    // Step 3: Check branch exists
+    const branchRes = await ghFetch(`https://api.github.com/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`);
+    if(branchRes.status === 404){
+      throw new Error(
+        `Branch "${branch}" not found in this repo.\n\n` +
+        `The default branch is: "${repoData.default_branch}"\n\n` +
+        `Fix: Change the Branch field to "${repoData.default_branch}" and save.`
+      );
+    }
     if(!branchRes.ok){
-      throw new Error(`Branch "${branch}" not found. Your default branch is "${defaultBranch}" — update the Branch field.`);
+      throw new Error(`Branch check failed (HTTP ${branchRes.status}).`);
     }
 
-    // All good!
+    // ✅ All checks passed
     result.innerHTML = `
-      <div style="background:rgba(64,192,128,.1);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:10px;line-height:1.7">
-        <div style="color:var(--green);font-weight:700;margin-bottom:4px">✅ Connection successful!</div>
-        <div style="color:var(--txt2);font-size:.75rem">
-          Logged in as: <strong style="color:var(--txt)">${esc(user.login)}</strong><br>
-          Repo: <strong style="color:var(--txt)">${esc(owner)}/${esc(repo)}</strong> (${repoData.private ? '🔒 private' : '🌐 public'})<br>
-          Branch: <strong style="color:var(--txt)">${esc(branch)}</strong> ✓<br>
-          You're ready to publish! 🚀
+      <div style="background:rgba(64,192,128,.1);border:1px solid rgba(64,192,128,.25);border-radius:var(--r);padding:12px;line-height:1.8">
+        <div style="color:var(--green);font-weight:700;margin-bottom:6px;font-size:.85rem">✅ Connection successful!</div>
+        <div style="font-size:.75rem;color:var(--txt2)">
+          <span style="color:var(--green)">✓</span> Token valid — logged in as <strong style="color:var(--txt)">${esc(user.login)}</strong><br>
+          <span style="color:var(--green)">✓</span> Repo <strong style="color:var(--txt)">${esc(owner)}/${esc(repo)}</strong> found (${repoData.private ? '🔒 private' : '🌐 public'})<br>
+          <span style="color:var(--green)">✓</span> Branch <strong style="color:var(--txt)">${esc(branch)}</strong> exists<br>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);color:var(--green)">🚀 Ready to publish!</div>
         </div>
       </div>`;
-    toast('GitHub connected successfully!', 'ok');
+    toast('GitHub connected ✅', 'ok');
+
   } catch(e){
-    result.innerHTML = `
-      <div style="background:rgba(224,80,96,.08);border:1px solid rgba(224,80,96,.25);border-radius:var(--r);padding:10px">
-        <div style="color:var(--err);font-weight:700;margin-bottom:4px">❌ Connection failed</div>
-        <div style="color:var(--txt2);font-size:.75rem;word-break:break-word">${esc(e.message)}</div>
-      </div>`;
+    result.innerHTML = showTestErr(e.message);
     toast('GitHub test failed', 'err');
   }
 
   btn.disabled = false;
   btn.textContent = '🔌 Test Connection';
+}
+
+function showTestErr(msg){
+  const lines = msg.split('\n').map(l => l ? `<div style="margin-bottom:2px">${esc(l)}</div>` : '<div style="height:6px"></div>').join('');
+  return `
+    <div style="background:rgba(224,80,96,.08);border:1px solid rgba(224,80,96,.25);border-radius:var(--r);padding:12px">
+      <div style="color:var(--err);font-weight:700;margin-bottom:8px;font-size:.82rem">❌ Connection failed</div>
+      <div style="font-size:.75rem;color:var(--txt2);line-height:1.6;word-break:break-word">${lines}</div>
+    </div>`;
 }
 
 /* =============================================
@@ -1167,7 +1216,7 @@ async function publishToGitHub(){
   statusEl.innerHTML = '<div style="color:var(--gold);font-size:.78rem;padding:10px;background:rgba(240,176,64,.08);border-radius:var(--r)">⏳ Verifying token...</div>';
 
   const headers = {
-    'Authorization': `Bearer ${token}`,
+    'Authorization': `token ${token}`,   // "token" prefix works for classic + fine-grained
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
     'Content-Type': 'application/json'
@@ -1175,7 +1224,16 @@ async function publishToGitHub(){
 
   // Step 0: Verify token is valid before doing anything
   try {
-    const testRes = await fetch('https://api.github.com/user', { headers });
+    let testRes;
+    try {
+      testRes = await fetch('https://api.github.com/user', { headers });
+    } catch(netErr){
+      throw new Error(
+        navigator.onLine
+          ? 'Browser blocked the request to api.github.com.\n\nPossible causes:\n• Token has spaces or invalid characters — re-paste it\n• A browser extension is blocking the request\n• Corporate firewall or proxy\n\nTip: Open DevTools (F12) → Network tab → click Commit & Deploy again → look for the blocked request.'
+          : 'No internet connection detected.'
+      );
+    }
     if(!testRes.ok){
       const d = await testRes.json().catch(()=>({}));
       throw new Error(d.message || `HTTP ${testRes.status}`);
@@ -1213,10 +1271,17 @@ async function publishToGitHub(){
     try {
       // Get current SHA (needed for update). 404 = file doesn't exist yet → create it.
       let sha = null;
-      const getRes = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${encodeURIComponent(branch)}`,
-        { headers }
-      );
+      let getRes;
+      try {
+        getRes = await fetch(
+          `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${encodeURIComponent(branch)}`,
+          { headers }
+        );
+      } catch(netErr) {
+        throw new Error(navigator.onLine
+          ? 'Browser blocked the request. Try opening admin on a deployed URL instead of localhost.'
+          : 'No internet connection.');
+      }
 
       if(getRes.ok){
         const d = await getRes.json();
@@ -1238,10 +1303,15 @@ async function publishToGitHub(){
       const body = { message: msg, content: encoded, branch };
       if(sha) body.sha = sha; // required for update, omit for new file
 
-      const putRes = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
-        { method:'PUT', headers, body: JSON.stringify(body) }
-      );
+      let putRes;
+      try {
+        putRes = await fetch(
+          `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
+          { method:'PUT', headers, body: JSON.stringify(body) }
+        );
+      } catch(netErr) {
+        throw new Error('Network error during commit. Check your connection.');
+      }
 
       if(!putRes.ok){
         const d = await putRes.json().catch(()=>({}));
