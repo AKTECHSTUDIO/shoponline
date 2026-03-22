@@ -1,5 +1,5 @@
 {
-  "name": "FlowOnlineAI",
+  "name": "ShopOnline",
   "tagline": "Turn your local shop into a thriving online business — fast, affordable, professionally done.",
   "logo": "/assets/img/logo.svg",
   "primaryColor": "#c85a2a",
@@ -17,7 +17,7 @@
     "whatsapp": "https://wa.me/919876543210"
   },
   "seo": {
-    "title": "FlowOnlineAI— Take Your Local Shop Online",
+    "title": "ShopOnline — Take Your Local Shop Online",
     "description": "We build professional online stores for local shop owners. Fast delivery, affordable pricing, full support.",
     "keywords": "online shop, e-commerce, local business, website builder India"
   },
