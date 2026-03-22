@@ -1,91 +1,76 @@
 // functions/github-oauth.js
 // ============================================
 // Cloudflare Pages Function
-// Handles GitHub OAuth code → token exchange
-// server-side so CLIENT_SECRET stays hidden.
+// Location: /functions/github-oauth.js  ← must be at repo ROOT/functions/
+// Served at URL: /github-oauth
 //
-// Cloudflare Pages Functions live in /functions/
-// and are served at the same path as the file.
-// This file is served at: /github-oauth
+// Set these in Cloudflare Pages → Settings → Variables and Secrets:
+//   GITHUB_CLIENT_ID     (type: Text)
+//   GITHUB_CLIENT_SECRET (type: Secret)
 // ============================================
 
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Content-Type': 'application/json',
+};
+
+const ok  = (data)    => new Response(JSON.stringify(data), { status: 200, headers: CORS });
+const err = (msg, s)  => new Response(JSON.stringify({ error: msg }), { status: s||400, headers: CORS });
+
+export async function onRequestOptions() {
+  return new Response(null, { status: 204, headers: CORS });
+}
+
 export async function onRequestPost({ request, env }) {
-  const cors = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-  };
-
-  // Parse request body
-  let code;
-  try {
-    const body = await request.json();
-    code = body.code;
-  } catch (e) {
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400, headers: cors });
-  }
-
-  if (!code) {
-    return new Response(JSON.stringify({ error: 'Missing code parameter' }), { status: 400, headers: cors });
-  }
-
   const CLIENT_ID     = env.GITHUB_CLIENT_ID;
   const CLIENT_SECRET = env.GITHUB_CLIENT_SECRET;
 
   if (!CLIENT_ID || !CLIENT_SECRET) {
-    return new Response(JSON.stringify({
-      error: 'OAuth not configured. Add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in Cloudflare Pages → Settings → Environment Variables.'
-    }), { status: 500, headers: cors });
+    return err(
+      'Environment variables missing. In Cloudflare Pages → Settings → Variables and Secrets, add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET, then redeploy.',
+      500
+    );
   }
 
+  let code;
+  try { code = (await request.json()).code; }
+  catch (e) { return err('Invalid request body', 400); }
+  if (!code) return err('Missing code', 400);
+
+  // Exchange code for access token
+  let tok;
   try {
-    // Exchange code → access token
-    const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+    const r = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ client_id: CLIENT_ID, client_secret: CLIENT_SECRET, code }),
     });
-    const tokenData = await tokenRes.json();
+    tok = await r.json();
+  } catch (e) { return err('GitHub token request failed: ' + e.message, 502); }
 
-    if (tokenData.error || !tokenData.access_token) {
-      return new Response(JSON.stringify({
-        error: tokenData.error_description || tokenData.error || 'No access token returned'
-      }), { status: 401, headers: cors });
-    }
-
-    // Get GitHub user profile
-    const userRes = await fetch('https://api.github.com/user', {
-      headers: {
-        Authorization: `token ${tokenData.access_token}`,
-        Accept: 'application/vnd.github+json',
-      },
-    });
-    const user = await userRes.json();
-
-    if (!user.login) {
-      return new Response(JSON.stringify({ error: 'Could not fetch GitHub user profile' }), { status: 401, headers: cors });
-    }
-
-    return new Response(JSON.stringify({
-      access_token: tokenData.access_token,
-      login: user.login,
-      name: user.name || user.login,
-      avatar_url: user.avatar_url,
-    }), { status: 200, headers: cors });
-
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: cors });
+  if (tok.error || !tok.access_token) {
+    return err('GitHub OAuth error: ' + (tok.error_description || tok.error || 'no token returned'), 401);
   }
+
+  // Get user profile
+  let user;
+  try {
+    const r = await fetch('https://api.github.com/user', {
+      headers: { Authorization: `token ${tok.access_token}`, Accept: 'application/vnd.github+json', 'User-Agent': 'ShopOnline-Admin' },
+    });
+    user = await r.json();
+  } catch (e) { return err('GitHub user fetch failed: ' + e.message, 502); }
+
+  if (!user.login) return err('Could not get GitHub username', 401);
+
+  return ok({ access_token: tok.access_token, login: user.login, name: user.name || user.login, avatar_url: user.avatar_url });
 }
 
-// Handle CORS preflight
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
+// Catch all other methods
+export async function onRequest(ctx) {
+  if (ctx.request.method === 'POST')   return onRequestPost(ctx);
+  if (ctx.request.method === 'OPTIONS') return onRequestOptions();
+  return err('Use POST', 405);
 }

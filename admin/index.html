@@ -453,20 +453,70 @@ async function handleOAuthCallback(code, state){
   }
 
   try {
-    // Call Netlify function to exchange code → token
-    // Auto-detect platform: Netlify uses /.netlify/functions/, Cloudflare Pages uses /functions/ root path
+    // Auto-detect platform endpoint
     const isNetlify = location.hostname.includes('.netlify.app') || location.hostname.includes('.netlify.com');
+    const isCFPages = location.hostname.includes('.pages.dev') || (!isNetlify && !location.hostname.includes('localhost'));
     const fnEndpoint = isNetlify ? '/.netlify/functions/github-oauth' : '/github-oauth';
 
-    const fnRes = await fetch(fnEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
-    });
-    const fnData = await fnRes.json();
+    let fnRes;
+    try {
+      fnRes = await fetch(fnEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+    } catch(netErr) {
+      showOAuthError(
+        `Network error reaching the OAuth function.<br><br>` +
+        `<strong>Endpoint tried:</strong> <code>${fnEndpoint}</code><br><br>` +
+        `This means the Cloudflare Pages Function is not deployed yet.<br>` +
+        `Make sure the <code>/functions/github-oauth.js</code> file is in your repo root and Cloudflare has redeployed.`
+      );
+      return;
+    }
+
+    // Diagnose specific HTTP errors
+    if(fnRes.status === 404){
+      showOAuthError(
+        `<strong>Function not found (404)</strong><br><br>` +
+        `The serverless function at <code>${fnEndpoint}</code> doesn't exist yet.<br><br>` +
+        `<strong>Fix for Cloudflare Pages:</strong><br>` +
+        `1. Make sure <code>functions/github-oauth.js</code> is in your repo root (not inside any subfolder)<br>` +
+        `2. Push to GitHub — Cloudflare will auto-deploy<br>` +
+        `3. Check Cloudflare Pages → Functions tab — <code>github-oauth</code> should appear there<br><br>` +
+        `<strong>Current repo owner in settings:</strong> ${localStorage.getItem(K.GH_OWNER)||'(not set — go to Integrations to set it)'}`
+      );
+      return;
+    }
+
+    if(fnRes.status === 500){
+      let errBody = {};
+      try { errBody = await fnRes.json(); } catch(e) {}
+      showOAuthError(
+        `<strong>Function error (500)</strong><br><br>` +
+        `${errBody.error || 'Internal server error'}<br><br>` +
+        `<strong>Most likely cause:</strong> Environment variables not set.<br>` +
+        `Go to Cloudflare Pages → Settings → Variables and Secrets → confirm both exist:<br>` +
+        `<code>GITHUB_CLIENT_ID</code> and <code>GITHUB_CLIENT_SECRET</code><br><br>` +
+        `After adding variables, click <strong>Retry deployment</strong> in Cloudflare Deployments tab.`
+      );
+      return;
+    }
+
+    let fnData;
+    try {
+      fnData = await fnRes.json();
+    } catch(e) {
+      showOAuthError(`Function returned invalid response (status ${fnRes.status}). Check Cloudflare Pages → Functions logs for details.`);
+      return;
+    }
 
     if(!fnRes.ok || fnData.error){
-      showOAuthError(fnData.error || 'OAuth exchange failed. Make sure GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET are set in Netlify environment variables.');
+      showOAuthError(
+        `<strong>OAuth exchange failed</strong><br><br>` +
+        `${fnData.error || `HTTP ${fnRes.status}`}<br><br>` +
+        `Check that <code>GITHUB_CLIENT_ID</code> and <code>GITHUB_CLIENT_SECRET</code> are set correctly in Cloudflare environment variables.`
+      );
       return;
     }
 
