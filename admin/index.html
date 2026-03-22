@@ -125,7 +125,18 @@
 
     /* AUTH GATE */
     .gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
-    .gate-box{background:var(--surf);border:1px solid var(--line);border-radius:var(--rl);padding:36px;max-width:360px;width:90%;text-align:center}
+    .gate-box{background:var(--surf);border:1px solid var(--line);border-radius:var(--rl);padding:36px;max-width:400px;width:90%;text-align:center}
+    .gate-box .divider{height:1px;background:var(--line);margin:20px 0;position:relative}
+    .gate-box .divider span{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--surf);padding:0 10px;font-size:.72rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em}
+    .gh-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px 20px;background:#238636;color:#fff;border:1.5px solid #2ea043;border-radius:var(--r);font-size:.88rem;font-weight:600;cursor:pointer;transition:filter .15s;text-decoration:none}
+    .gh-btn:hover{filter:brightness(1.12)}
+    .gh-btn svg{flex-shrink:0}
+    .access-denied{background:rgba(224,80,96,.1);border:1px solid rgba(224,80,96,.3);border-radius:var(--r);padding:16px;margin-top:16px;font-size:.82rem;color:var(--err)}
+    .auth-user{display:flex;align-items:center;gap:12px;background:rgba(64,192,128,.08);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:12px;margin-bottom:16px}
+    .auth-user img{width:40px;height:40px;border-radius:50%}
+    .auth-user-info{text-align:left;flex:1}
+    .auth-user-name{font-weight:700;font-size:.88rem;color:var(--txt)}
+    .auth-user-role{font-size:.72rem;color:var(--green)}
 
     /* SECTION HEADERS */
     .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -156,22 +167,83 @@
 <!-- AUTH GATE -->
 <div class="gate" id="gate">
   <div class="gate-box">
+
+    <!-- GitHub OAuth login (shown when OAuth is configured) -->
+    <div id="gateOAuth" style="display:none">
+      <div style="font-size:2.2rem;margin-bottom:14px">🔐</div>
+      <h2 style="font-size:1.4rem;margin-bottom:6px">Admin Access</h2>
+      <p style="font-size:.8rem;color:var(--txt2);margin-bottom:20px">Sign in with the GitHub account that owns this repository.</p>
+      <a class="gh-btn" id="ghLoginBtn" href="#">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        Sign in with GitHub
+      </a>
+      <div id="oauthError" style="display:none" class="access-denied"></div>
+      <div id="oauthLoading" style="display:none;margin-top:14px;color:var(--txt2);font-size:.8rem">⏳ Verifying with GitHub...</div>
+    </div>
+
+    <!-- Fallback: Secret key login (GitHub Pages / CF Pages / no function) -->
+    <div id="gateKey" style="display:none">
+      <div style="font-size:2.2rem;margin-bottom:14px">🔒</div>
+      <h2 style="font-size:1.4rem;margin-bottom:6px">Admin Access</h2>
+      <p style="font-size:.8rem;color:var(--txt2);margin-bottom:20px">Enter your admin secret key</p>
+      <input type="password" id="keyInput" class="fi" placeholder="Secret key..." style="text-align:center;margin-bottom:10px;font-size:.95rem" autocomplete="current-password">
+      <div id="keyErr" style="display:none;font-size:.72rem;color:var(--err);margin-bottom:10px">❌ Incorrect key</div>
+      <button class="btn btn-p" style="width:100%;justify-content:center" onclick="checkSecretKey()">Enter →</button>
+      <p style="font-size:.7rem;color:var(--txt2);margin-top:14px">Set your secret key in Admin → Password &amp; Security</p>
+    </div>
+
+    <!-- First-time setup (no auth configured yet) -->
     <div id="gateSetup" style="display:none">
       <div style="font-size:2.2rem;margin-bottom:14px">🛠️</div>
       <h2 style="font-size:1.4rem;margin-bottom:6px">First-Time Setup</h2>
-      <p style="font-size:.82rem;color:var(--txt2);margin-bottom:20px">No password set yet. Create your admin password to get started.</p>
-      <input type="password" id="pwSetup" class="fi" placeholder="Create a password..." style="text-align:center;margin-bottom:8px;font-size:.95rem" autocomplete="new-password">
-      <input type="password" id="pwSetupConfirm" class="fi" placeholder="Confirm password..." style="text-align:center;margin-bottom:4px;font-size:.95rem" autocomplete="new-password">
-      <div id="pwSetupErr" style="display:none;font-size:.72rem;color:var(--err);margin-bottom:10px;text-align:left">❌ Passwords don't match or too short (min 6 chars)</div>
-      <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="setupPassword()">Create Password & Enter →</button>
+      <p style="font-size:.8rem;color:var(--txt2);margin-bottom:16px">Choose how to protect your admin panel.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button class="gh-btn" onclick="startOAuthSetup()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          Use GitHub Login (Recommended)
+        </button>
+        <button class="btn btn-g" style="width:100%;justify-content:center" onclick="startKeySetup()">🔑 Use Secret Key Instead</button>
+      </div>
+      <p style="font-size:.7rem;color:var(--txt2)">GitHub Login works on Netlify. Secret Key works everywhere.</p>
     </div>
-    <div id="gateLogin">
-      <div style="font-size:2.2rem;margin-bottom:14px">🔒</div>
-      <h2 style="font-size:1.4rem;margin-bottom:6px">Admin Access</h2>
-      <p style="font-size:.82rem;color:var(--txt2);margin-bottom:20px">Enter your password to open the dashboard</p>
-      <input type="password" id="pwInput" class="fi" placeholder="Password..." style="text-align:center;margin-bottom:12px;font-size:.95rem" autocomplete="current-password">
-      <button class="btn btn-p" style="width:100%;justify-content:center" onclick="checkAuth()">Unlock Dashboard →</button>
+
+    <!-- OAuth setup instructions -->
+    <div id="gateOAuthSetup" style="display:none;text-align:left">
+      <h3 style="font-size:1rem;margin-bottom:12px;text-align:center">Setup GitHub OAuth</h3>
+      <div style="font-size:.75rem;color:var(--txt2);line-height:1.8;margin-bottom:14px">
+        <div style="margin-bottom:8px"><strong style="color:var(--txt)">Step 1:</strong> Go to <a href="https://github.com/settings/applications/new" target="_blank" style="color:var(--terra)">github.com/settings/applications/new</a></div>
+        <div style="margin-bottom:8px"><strong style="color:var(--txt)">Step 2:</strong> Fill in:<br>
+          • App name: <em>My Admin Panel</em><br>
+          • Homepage URL: your site URL<br>
+          • Callback URL: <code id="callbackUrlDisplay" style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:.7rem"></code>
+        </div>
+        <div style="margin-bottom:8px"><strong style="color:var(--txt)">Step 3:</strong> Copy <strong>Client ID</strong> and generate <strong>Client Secret</strong></div>
+        <div><strong style="color:var(--txt)">Step 4:</strong> In Netlify → Site Settings → Environment Variables, add:<br>
+          <code style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:.7rem">GITHUB_CLIENT_ID</code> and <code style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:.7rem">GITHUB_CLIENT_SECRET</code>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">GitHub Client ID (paste here to save)</label><input class="fi fi-mono" id="setupClientId" placeholder="Ov23liXXXXXXXXXXXXXX"></div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-bottom:12px">⚠️ Client Secret must be set as a Netlify environment variable — never paste it here.</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveOAuthSetup()">Save & Enable OAuth</button>
+        <button class="btn btn-g btn-sm" onclick="showGate('gateSetup')">← Back</button>
+      </div>
     </div>
+
+    <!-- Secret key setup -->
+    <div id="gateKeySetup" style="display:none">
+      <div style="font-size:2rem;margin-bottom:12px">🔑</div>
+      <h3 style="font-size:1rem;margin-bottom:6px">Create Secret Key</h3>
+      <p style="font-size:.75rem;color:var(--txt2);margin-bottom:16px">This key unlocks your admin panel. Store it safely — you can't recover it.</p>
+      <input type="password" id="setupKey1" class="fi" placeholder="Create secret key (min 8 chars)" style="margin-bottom:8px" autocomplete="new-password">
+      <input type="password" id="setupKey2" class="fi" placeholder="Confirm secret key" style="margin-bottom:6px" autocomplete="new-password">
+      <div id="setupKeyErr" style="display:none;font-size:.72rem;color:var(--err);margin-bottom:8px">❌ Keys don't match or too short</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveKeySetup()">Create Key & Enter →</button>
+        <button class="btn btn-g btn-sm" onclick="showGate('gateSetup')">← Back</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -244,60 +316,240 @@ let S = { site:{}, pages:{}, clients:{submissions:[]}, dirty:false, currentPage:
 /* =============================================
    AUTH
    ============================================= */
-const PASS = localStorage.getItem('so_adm_p') || '';
+/* =============================================
+   AUTH — Unified: GitHub OAuth + Secret Key
+   =============================================
+   Mode auto-detected on load:
+   • If GITHUB_CLIENT_ID stored → show GitHub Login (Netlify)
+   • If secret key hash stored  → show key input (any host)
+   • Otherwise                  → show first-time setup
+   ============================================= */
 
-function checkAuth(){
-  const v = document.getElementById('pwInput').value;
-  if(v===PASS || v===atob(localStorage.getItem('so_adm_h')||'')){
-    localStorage.setItem('so_admin','true');
-    localStorage.setItem('so_adm_h', btoa(v));
-    document.getElementById('gate').style.display='none';
-    document.getElementById('app').style.display='grid';
-    loadAll();
+// ---- Storage keys ----
+const K = {
+  SESSION:    'so_session',       // {mode, login, name, avatar, expires}
+  CLIENT_ID:  'so_gh_client_id',  // GitHub OAuth client ID
+  KEY_HASH:   'so_key_hash',      // SHA-256 of secret key (for fallback auth)
+  GH_OWNER:   'so_gh_owner',
+  GH_REPO:    'so_gh_repo',
+  GH_BRANCH:  'so_gh_branch',
+  GH_TOKEN:   'so_gh_token',
+};
+
+// ---- Session helpers ----
+function getSession(){
+  try {
+    const s = JSON.parse(localStorage.getItem(K.SESSION)||'null');
+    if(!s) return null;
+    if(s.expires && Date.now() > s.expires) { localStorage.removeItem(K.SESSION); return null; }
+    return s;
+  } catch(e){ return null; }
+}
+function setSession(data){
+  // Session lasts 8 hours
+  localStorage.setItem(K.SESSION, JSON.stringify({ ...data, expires: Date.now() + 8*60*60*1000 }));
+}
+function clearSession(){ localStorage.removeItem(K.SESSION); }
+
+// ---- Show a specific gate panel ----
+function showGate(id){
+  ['gateOAuth','gateKey','gateSetup','gateOAuthSetup','gateKeySetup'].forEach(x => {
+    const el = document.getElementById(x);
+    if(el) el.style.display = x===id ? 'block' : 'none';
+  });
+  document.getElementById('gate').style.display = 'flex';
+}
+
+// ---- Entry point ----
+window.addEventListener('DOMContentLoaded', async () => {
+  S.githubToken = localStorage.getItem(K.GH_TOKEN)||'';
+
+  // 1. Already have a valid session?
+  const session = getSession();
+  if(session){
+    grantAccess(session);
+    return;
+  }
+
+  // 2. Returning from GitHub OAuth callback? (?code=xxx in URL)
+  const params  = new URLSearchParams(location.search);
+  const oaCode  = params.get('code');
+  const oaState = params.get('state');
+  if(oaCode){
+    handleOAuthCallback(oaCode, oaState);
+    return;
+  }
+
+  // 3. Decide which gate to show
+  const clientId = localStorage.getItem(K.CLIENT_ID);
+  const keyHash  = localStorage.getItem(K.KEY_HASH);
+
+  if(clientId){
+    // OAuth mode — show GitHub login
+    setupOAuthButton(clientId);
+    showGate('gateOAuth');
+  } else if(keyHash){
+    // Secret key mode
+    showGate('gateKey');
   } else {
-    toast('Incorrect password','err');
-    document.getElementById('pwInput').value='';
+    // First-time setup
+    const cbUrl = document.getElementById('callbackUrlDisplay');
+    if(cbUrl) cbUrl.textContent = location.origin + '/admin/';
+    showGate('gateSetup');
+  }
+});
+
+// ---- GitHub OAuth ----
+function setupOAuthButton(clientId){
+  const state   = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+  sessionStorage.setItem('oauth_state', state);
+  const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo&state=${state}&redirect_uri=${encodeURIComponent(location.origin+'/admin/')}`;
+  const btn = document.getElementById('ghLoginBtn');
+  if(btn) btn.href = url;
+}
+
+async function handleOAuthCallback(code, state){
+  // Show loading screen immediately
+  document.getElementById('gate').style.display = 'flex';
+  showGate('gateOAuth');
+  document.getElementById('oauthLoading').style.display = 'block';
+  document.getElementById('ghLoginBtn').style.display = 'none';
+
+  // Clean URL (remove ?code= so refresh doesn't re-submit)
+  history.replaceState(null, '', location.pathname);
+
+  // Validate state to prevent CSRF
+  const savedState = sessionStorage.getItem('oauth_state');
+  sessionStorage.removeItem('oauth_state');
+  if(savedState && state && savedState !== state){
+    showOAuthError('Security check failed (state mismatch). Please try again.');
+    return;
+  }
+
+  try {
+    // Call Netlify function to exchange code → token
+    // Auto-detect platform: Netlify uses /.netlify/functions/, Cloudflare Pages uses /functions/ root path
+    const isNetlify = location.hostname.includes('.netlify.app') || location.hostname.includes('.netlify.com');
+    const fnEndpoint = isNetlify ? '/.netlify/functions/github-oauth' : '/github-oauth';
+
+    const fnRes = await fetch(fnEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const fnData = await fnRes.json();
+
+    if(!fnRes.ok || fnData.error){
+      showOAuthError(fnData.error || 'OAuth exchange failed. Make sure GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET are set in Netlify environment variables.');
+      return;
+    }
+
+    const { access_token, login, name, avatar_url } = fnData;
+
+    // Verify this GitHub user is the repo owner
+    const allowedOwner = localStorage.getItem(K.GH_OWNER) || '';
+    if(allowedOwner && login.toLowerCase() !== allowedOwner.toLowerCase()){
+      showOAuthError(
+        `Access denied. This admin panel belongs to <strong>${esc(allowedOwner)}</strong>.<br>` +
+        `You logged in as <strong>${esc(login)}</strong>.<br><br>` +
+        `<a href="https://github.com/logout" target="_blank" style="color:var(--terra)">Switch GitHub account →</a>`
+      );
+      return;
+    }
+
+    // Save token for GitHub API calls and session
+    localStorage.setItem(K.GH_TOKEN, access_token);
+    S.githubToken = access_token;
+    setSession({ mode:'oauth', login, name, avatar: avatar_url });
+    grantAccess({ login, name, avatar: avatar_url });
+
+  } catch(e){
+    showOAuthError('Network error: ' + e.message + '<br><br>Make sure the Netlify function is deployed and environment variables are set.');
   }
 }
-document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkAuth()});
-document.getElementById('pwSetup').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pwSetupConfirm').focus()});
-document.getElementById('pwSetupConfirm').addEventListener('keydown',e=>{if(e.key==='Enter')setupPassword()});
 
-function setupPassword(){
-  const p1 = document.getElementById('pwSetup').value;
-  const p2 = document.getElementById('pwSetupConfirm').value;
-  const err = document.getElementById('pwSetupErr');
-  if(p1.length < 6 || p1 !== p2){ err.style.display='block'; return; }
-  err.style.display='none';
-  localStorage.setItem('so_adm_p', p1);
-  localStorage.setItem('so_adm_h', btoa(p1));
-  localStorage.setItem('so_admin','true');
-  document.getElementById('gate').style.display='none';
-  document.getElementById('app').style.display='grid';
+function showOAuthError(html){
+  document.getElementById('oauthLoading').style.display = 'none';
+  document.getElementById('ghLoginBtn').style.display = 'flex';
+  const el = document.getElementById('oauthError');
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+
+// ---- Secret Key Auth ----
+async function checkSecretKey(){
+  const input = document.getElementById('keyInput').value.trim();
+  const stored = localStorage.getItem(K.KEY_HASH);
+  if(!input || !stored){ document.getElementById('keyErr').style.display='block'; return; }
+
+  const inputHash = await sha256(input);
+  if(inputHash === stored){
+    document.getElementById('keyErr').style.display = 'none';
+    setSession({ mode:'key', login:'Admin', name:'Admin' });
+    grantAccess({ name:'Admin' });
+  } else {
+    document.getElementById('keyErr').style.display = 'block';
+  }
+}
+document.getElementById('keyInput')?.addEventListener('keydown', e => { if(e.key==='Enter') checkSecretKey(); });
+
+// ---- SHA-256 helper (Web Crypto API — works in all modern browsers) ----
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ---- First-time setup flows ----
+function startOAuthSetup(){
+  const cbUrl = document.getElementById('callbackUrlDisplay');
+  if(cbUrl) cbUrl.textContent = location.origin + '/admin/';
+  showGate('gateOAuthSetup');
+}
+
+function saveOAuthSetup(){
+  const id = document.getElementById('setupClientId').value.trim();
+  if(!id){ toast('Paste your GitHub Client ID first','err'); return; }
+  localStorage.setItem(K.CLIENT_ID, id);
+  setupOAuthButton(id);
+  showGate('gateOAuth');
+  toast('OAuth configured! Click Sign in with GitHub to test.','ok');
+}
+
+function startKeySetup(){ showGate('gateKeySetup'); }
+
+async function saveKeySetup(){
+  const k1 = document.getElementById('setupKey1').value;
+  const k2 = document.getElementById('setupKey2').value;
+  const err = document.getElementById('setupKeyErr');
+  if(k1.length < 8 || k1 !== k2){ err.style.display='block'; return; }
+  err.style.display = 'none';
+  const hash = await sha256(k1);
+  localStorage.setItem(K.KEY_HASH, hash);
+  setSession({ mode:'key', login:'Admin', name:'Admin' });
+  document.getElementById('setupKey1').value = '';
+  document.getElementById('setupKey2').value = '';
+  grantAccess({ name:'Admin' });
+  toast('Secret key saved!','ok');
+}
+document.getElementById('setupKey1')?.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('setupKey2').focus(); });
+document.getElementById('setupKey2')?.addEventListener('keydown', e => { if(e.key==='Enter') saveKeySetup(); });
+
+// ---- Grant access ----
+function grantAccess(user){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display  = 'grid';
+  S.currentUser = user;
   loadAll();
 }
 
+// ---- Logout ----
 function logout(){
-  localStorage.removeItem('so_admin');
+  clearSession();
+  // Also clear OAuth token so next visit requires re-login
+  localStorage.removeItem(K.GH_TOKEN);
+  S.githubToken = '';
   location.reload();
 }
-
-window.addEventListener('DOMContentLoaded',()=>{
-  S.githubToken = localStorage.getItem('so_gh_token')||'';
-  const alreadyIn = localStorage.getItem('so_admin')==='true'
-                 || new URLSearchParams(location.search).get('admin')==='true';
-  if(alreadyIn){
-    document.getElementById('gate').style.display='none';
-    document.getElementById('app').style.display='grid';
-    loadAll();
-    return;
-  }
-  // Show gate — decide login vs first-run setup
-  const hasPassword = !!localStorage.getItem('so_adm_p');
-  document.getElementById('gate').style.display='flex';
-  document.getElementById('gateLogin').style.display = hasPassword ? 'block' : 'none';
-  document.getElementById('gateSetup').style.display = hasPassword ? 'none' : 'block';
-});
 
 /* =============================================
    DATA LOADING
@@ -1402,157 +1654,146 @@ function previewJSON(type){
    PAGE: SETTINGS (Password & Security)
    ============================================= */
 function settings(){
+  const session   = getSession() || {};
+  const mode      = session.mode || 'unknown';
+  const clientId  = localStorage.getItem(K.CLIENT_ID) || '';
+  const hasKey    = !!localStorage.getItem(K.KEY_HASH);
+  const user      = S.currentUser || {};
+
+  const modeLabel = mode==='oauth' ? '🐙 GitHub OAuth' : mode==='key' ? '🔑 Secret Key' : '?';
+  const modeBadge = `<span style="background:rgba(64,192,128,.15);color:var(--green);padding:2px 8px;border-radius:100px;font-size:.7rem;font-weight:700">${modeLabel}</span>`;
+
   return `
   <div class="grid2">
+
+    <!-- Current session card -->
     <div class="card">
-      <div class="sh-t" style="margin-bottom:6px">🔑 Change Admin Password</div>
-      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:18px">Password is stored only in this browser's localStorage. You'll need to update it on every device you use.</p>
-
-      <div class="fg">
-        <label class="fl">Current Password</label>
-        <input class="fi" type="password" id="pwCurrent" placeholder="Enter current password" autocomplete="current-password">
-        <div id="pwCurrentErr" style="display:none;font-size:.72rem;color:var(--err);margin-top:4px">❌ Incorrect current password</div>
-      </div>
-      <div class="fg">
-        <label class="fl">New Password</label>
-        <input class="fi" type="password" id="pwNew" placeholder="Enter new password (min. 6 chars)" autocomplete="new-password">
-        <div id="pwNewErr" style="display:none;font-size:.72rem;color:var(--err);margin-top:4px">❌ Must be at least 6 characters</div>
-      </div>
-      <div class="fg">
-        <label class="fl">Confirm New Password</label>
-        <input class="fi" type="password" id="pwConfirm" placeholder="Re-enter new password" autocomplete="new-password">
-        <div id="pwConfirmErr" style="display:none;font-size:.72rem;color:var(--err);margin-top:4px">❌ Passwords do not match</div>
-      </div>
-
-      <div id="pwSuccess" style="display:none;background:rgba(64,192,128,.12);border:1px solid rgba(64,192,128,.25);border-radius:var(--r);padding:12px;font-size:.8rem;color:var(--green);margin-bottom:14px">
-        ✅ Password changed successfully! Use the new password next time you log in.
-      </div>
-
-      <button class="btn btn-p" onclick="changePassword()">🔑 Change Password</button>
+      <div class="sh-t" style="margin-bottom:12px">🔐 Current Session</div>
+      ${user.avatar ? `
+      <div class="auth-user" style="margin-bottom:14px">
+        <img src="${esc(user.avatar)}" alt="">
+        <div class="auth-user-info">
+          <div class="auth-user-name">${esc(user.name||user.login||'Admin')}</div>
+          <div class="auth-user-role">✓ Authenticated via ${modeLabel}</div>
+        </div>
+      </div>` : `
+      <div style="background:var(--surf2);border-radius:var(--r);padding:10px;margin-bottom:14px;font-size:.8rem">
+        Logged in as <strong>Admin</strong> via ${modeBadge}
+      </div>`}
+      <div style="font-size:.75rem;color:var(--txt2);margin-bottom:14px">Session expires in 8 hours. Each login starts a fresh session.</div>
+      <button class="btn btn-red" style="justify-content:flex-start" onclick="logout()">🚪 Log Out</button>
     </div>
 
+    <!-- Auth mode card -->
     <div class="card">
-      <div class="sh-t" style="margin-bottom:6px">🔒 Session & Access</div>
-      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:18px">Manage your current admin session and access methods.</p>
+      <div class="sh-t" style="margin-bottom:12px">⚙️ Authentication Mode</div>
+      <div style="font-size:.78rem;color:var(--txt2);margin-bottom:14px">Currently using: ${modeBadge}</div>
 
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="background:var(--surf2);border-radius:var(--r);padding:12px">
-          <div style="font-size:.78rem;font-weight:700;margin-bottom:4px">Current Session</div>
-          <div style="font-size:.72rem;color:var(--txt2)">Logged in via: <span style="color:var(--green)">${localStorage.getItem('so_admin')==='true' ? 'Browser localStorage' : 'URL param'}</span></div>
-          <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">Session persists until you log out or clear browser data.</div>
-        </div>
-
-        <div style="background:var(--surf2);border-radius:var(--r);padding:12px">
-          <div style="font-size:.78rem;font-weight:700;margin-bottom:4px">URL Access</div>
-          <div style="font-size:.72rem;color:var(--txt2)">You can also access admin via:<br>
-          <code style="background:var(--bg);padding:2px 5px;border-radius:3px;font-size:.7rem">yoursite.com/admin/?admin=true</code></div>
-          <div style="font-size:.72rem;color:var(--txt2);margin-top:4px">⚠️ Share this URL with caution — anyone with it can open the admin login.</div>
-        </div>
-
-        <div style="background:var(--surf2);border-radius:var(--r);padding:12px">
-          <div style="font-size:.78rem;font-weight:700;margin-bottom:6px">Actions</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn btn-g btn-sm" style="justify-content:flex-start" onclick="clearAllLocal()">🗑️ Clear All Local Data</button>
-            <button class="btn btn-red btn-sm" style="justify-content:flex-start" onclick="logout()">🚪 Log Out Now</button>
-          </div>
-        </div>
+      ${clientId ? `
+      <div style="background:rgba(64,192,128,.08);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:12px;margin-bottom:12px;font-size:.75rem">
+        <div style="color:var(--green);font-weight:700;margin-bottom:4px">✅ GitHub OAuth Active</div>
+        <div style="color:var(--txt2)">Client ID: <code style="background:var(--bg);padding:1px 4px;border-radius:3px">${esc(clientId.slice(0,8))}...</code></div>
+        <div style="color:var(--txt2);margin-top:4px">Only the GitHub account <strong style="color:var(--txt)">${esc(localStorage.getItem(K.GH_OWNER)||'repo owner')}</strong> can log in.</div>
       </div>
+      <button class="btn btn-red btn-sm" onclick="disableOAuth()">🗑️ Remove OAuth / Switch to Key</button>
+      ` : `
+      <div style="background:rgba(240,176,64,.08);border:1px solid rgba(240,176,64,.2);border-radius:var(--r);padding:12px;margin-bottom:12px;font-size:.75rem">
+        <div style="color:var(--gold);font-weight:700;margin-bottom:4px">⚠️ GitHub OAuth not configured</div>
+        <div style="color:var(--txt2)">Anyone who knows your secret key can access the admin. GitHub OAuth ties access to your GitHub account.</div>
+      </div>
+      <button class="btn btn-g btn-sm" onclick="switchToOAuth()">🐙 Set Up GitHub OAuth</button>
+      `}
     </div>
 
+    <!-- Change secret key card (only shown in key mode or as fallback option) -->
     <div class="card">
-      <div class="sh-t" style="margin-bottom:6px">ℹ️ Security Notes</div>
-      <div style="display:flex;flex-direction:column;gap:10px;font-size:.78rem;color:var(--txt2)">
-        <div style="display:flex;gap:10px">
-          <span style="color:var(--green);flex-shrink:0">✓</span>
-          <span>Password is stored in <strong style="color:var(--txt)">localStorage only</strong> — never sent to any server.</span>
-        </div>
-        <div style="display:flex;gap:10px">
-          <span style="color:var(--green);flex-shrink:0">✓</span>
-          <span>GitHub token is also stored locally — never exposed in public HTML.</span>
-        </div>
-        <div style="display:flex;gap:10px">
-          <span style="color:var(--gold);flex-shrink:0">⚠</span>
-          <span>Anyone with physical access to this browser can open DevTools and read localStorage. Use a private/incognito window on shared computers.</span>
-        </div>
-        <div style="display:flex;gap:10px">
-          <span style="color:var(--gold);flex-shrink:0">⚠</span>
-          <span>For production: consider adding HTTP Basic Auth at the server/CDN level (Netlify supports this in <code style="background:var(--bg);padding:1px 4px;border-radius:3px">netlify.toml</code>) for stronger protection.</span>
-        </div>
-        <div style="display:flex;gap:10px">
-          <span style="color:var(--terra);flex-shrink:0">❌</span>
-          <span>Do NOT share your admin URL or password with untrusted people — they can modify your site content and publish to GitHub.</span>
-        </div>
+      <div class="sh-t" style="margin-bottom:6px">🔑 ${hasKey ? 'Change' : 'Set'} Secret Key</div>
+      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:14px">${hasKey ? 'Update your secret key. Store it safely — you cannot recover it.' : 'Set a secret key as a fallback login method.'}</p>
+      ${hasKey ? `
+      <div class="fg"><label class="fl">Current Key</label><input class="fi" type="password" id="oldKey" placeholder="Current secret key" autocomplete="current-password"></div>` : ''}
+      <div class="fg"><label class="fl">New Key (min 8 chars)</label><input class="fi" type="password" id="newKey1" placeholder="New secret key" autocomplete="new-password"></div>
+      <div class="fg"><label class="fl">Confirm New Key</label><input class="fi" type="password" id="newKey2" placeholder="Confirm new key" autocomplete="new-password"></div>
+      <div id="keyChangeErr" style="display:none;font-size:.72rem;color:var(--err);margin-bottom:10px"></div>
+      <div id="keyChangeOk" style="display:none;background:rgba(64,192,128,.1);border:1px solid rgba(64,192,128,.2);border-radius:var(--r);padding:10px;font-size:.78rem;color:var(--green);margin-bottom:10px">✅ Secret key updated!</div>
+      <button class="btn btn-p" onclick="changeSecretKey()">💾 Save Key</button>
+    </div>
+
+    <!-- Security info -->
+    <div class="card">
+      <div class="sh-t" style="margin-bottom:10px">ℹ️ Security Guide</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:.75rem;color:var(--txt2)">
+        <div style="display:flex;gap:8px"><span style="color:var(--green)">✓</span><span><strong style="color:var(--txt)">GitHub OAuth</strong> — most secure. Only your GitHub account can log in. Requires Netlify + a GitHub OAuth App.</span></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--gold)">✓</span><span><strong style="color:var(--txt)">Secret Key</strong> — works on any host (GitHub Pages, CF Pages, Netlify). Key is hashed with SHA-256 — never stored in plain text.</span></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--gold)">⚠</span><span>Sessions last 8 hours and are stored in localStorage. Log out when done on shared computers.</span></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--gold)">⚠</span><span>GitHub token for publishing is stored in localStorage. It grants write access to your repo — keep it safe.</span></div>
+        <div style="display:flex;gap:8px"><span style="color:var(--terra)">❌</span><span>Never share your admin URL with anyone you don't fully trust.</span></div>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn btn-red btn-sm" style="justify-content:flex-start" onclick="clearAllLocal()">🗑️ Clear All Local Data & Log Out</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="sh-t" style="margin-bottom:6px">💡 Netlify Password Protection (Recommended)</div>
-      <p style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">Add server-level basic auth to the <code style="background:var(--bg);padding:1px 4px;border-radius:3px">/admin/</code> folder so it requires login even before the page loads.</p>
-      <div style="font-size:.75rem;font-family:'DM Mono',monospace;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px;color:var(--green);white-space:pre">[[headers]]
-  for = "/admin/*"
-  [headers.values]
-    Basic-Auth = "admin:yourpassword"</div>
-      <div style="font-size:.72rem;color:var(--txt2);margin-top:8px">Add this to your <code style="background:var(--bg);padding:1px 4px;border-radius:3px">netlify.toml</code> file and redeploy. Replace <em>yourpassword</em> with a strong password.</div>
-      <button class="btn btn-g btn-sm" style="margin-top:10px" onclick="navigator.clipboard.writeText('[[headers]]\n  for = \"/admin/*\"\n  [headers.values]\n    Basic-Auth = \"admin:yourpassword\"').then(()=>toast('Copied to clipboard','ok'))">📋 Copy Snippet</button>
-    </div>
   </div>`;
 }
+}
 
-function changePassword(){
-  // Hide previous errors and success
-  ['pwCurrentErr','pwNewErr','pwConfirmErr','pwSuccess'].forEach(id=>{
-    document.getElementById(id).style.display='none';
-  });
+async function changeSecretKey(){
+  const errEl = document.getElementById('keyChangeErr');
+  const okEl  = document.getElementById('keyChangeOk');
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
 
-  const current  = document.getElementById('pwCurrent').value;
-  const newPw    = document.getElementById('pwNew').value;
-  const confirm  = document.getElementById('pwConfirm').value;
+  const oldKeyEl = document.getElementById('oldKey');
+  const k1 = document.getElementById('newKey1').value;
+  const k2 = document.getElementById('newKey2').value;
+  const stored = localStorage.getItem(K.KEY_HASH);
 
-  // Get the actual stored password
-  const stored = localStorage.getItem('so_adm_p') || '';
-  const storedHash = localStorage.getItem('so_adm_h') || '';
-
-  let valid = true;
-
-  // Check current password
-  if(current !== stored && current !== atob(storedHash || btoa(''))){
-    document.getElementById('pwCurrentErr').style.display = 'block';
-    valid = false;
+  // If there's an existing key, verify it first
+  if(oldKeyEl && stored){
+    const oldHash = await sha256(oldKeyEl.value.trim());
+    if(oldHash !== stored){
+      errEl.textContent = '❌ Current key is incorrect';
+      errEl.style.display = 'block';
+      return;
+    }
   }
-  // Check new password length
-  if(newPw.length < 6){
-    document.getElementById('pwNewErr').style.display = 'block';
-    valid = false;
-  }
-  // Check confirmation match
-  if(newPw !== confirm){
-    document.getElementById('pwConfirmErr').style.display = 'block';
-    valid = false;
-  }
+  if(k1.length < 8){ errEl.textContent = '❌ Key must be at least 8 characters'; errEl.style.display='block'; return; }
+  if(k1 !== k2){ errEl.textContent = '❌ Keys do not match'; errEl.style.display='block'; return; }
 
-  if(!valid) return;
+  const hash = await sha256(k1);
+  localStorage.setItem(K.KEY_HASH, hash);
+  document.getElementById('newKey1').value = '';
+  document.getElementById('newKey2').value = '';
+  if(oldKeyEl) oldKeyEl.value = '';
+  okEl.style.display = 'block';
+  toast('Secret key updated!', 'ok');
+}
 
-  // Save new password
-  localStorage.setItem('so_adm_p', newPw);
-  localStorage.setItem('so_adm_h', btoa(newPw));
+function disableOAuth(){
+  if(!confirm('Remove GitHub OAuth? You will need a secret key to log in after this.')) return;
+  localStorage.removeItem(K.CLIENT_ID);
+  toast('OAuth removed. Set a secret key to log back in.', 'ok');
+  render();
+}
 
-  // Clear inputs
-  document.getElementById('pwCurrent').value = '';
-  document.getElementById('pwNew').value = '';
-  document.getElementById('pwConfirm').value = '';
-
-  // Show success
-  document.getElementById('pwSuccess').style.display = 'block';
-  toast('Password changed successfully!', 'ok');
+function switchToOAuth(){
+  // Navigate to the OAuth setup screen inside the gate
+  // (log out first, then show setup)
+  if(!confirm('This will log you out and show the GitHub OAuth setup screen. Continue?')) return;
+  clearSession();
+  location.reload();
 }
 
 function clearAllLocal(){
-  if(!confirm('This will clear ALL local admin data including:\n• Saved password\n• GitHub token\n• Local form submissions\n• Locally edited JSON\n\nYou will be logged out. Continue?')) return;
-  const keys = ['so_admin','so_adm_p','so_adm_h','so_gh_token','so_gh_owner','so_gh_repo','so_gh_branch','so_submissions','so_site_data','so_pages_data'];
+  if(!confirm('Clear ALL local data?\n\nThis removes:\n• Session\n• Auth config\n• GitHub token\n• Local edits\n• Submissions\n\nYou will be logged out.')) return;
+  const keys = [K.SESSION, K.CLIENT_ID, K.KEY_HASH, K.GH_TOKEN, K.GH_OWNER, K.GH_REPO, K.GH_BRANCH,
+                'so_submissions','so_site_data','so_pages_data'];
   keys.forEach(k => localStorage.removeItem(k));
-  toast('All local data cleared. Logging out...', 'ok');
-  setTimeout(() => location.reload(), 1500);
+  sessionStorage.clear();
+  toast('All cleared. Logging out...','ok');
+  setTimeout(() => location.reload(), 1400);
 }
+
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
