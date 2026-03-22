@@ -212,6 +212,19 @@
     ScrollAnim.init();
   }
 })();
+
+  // Apply brand name to any remaining hardcoded text nodes
+  if (typeof Branding !== 'undefined') {
+    fetch('/data/site.json?v='+Date.now()).then(r=>r.json()).then(site=>{
+      if(site.name && site.name !== 'ShopOnline'){
+        document.querySelectorAll('p,span,h1,h2,h3,h4,li,a').forEach(el=>{
+          if(el.children.length===0 && el.textContent.includes('ShopOnline')){
+            el.textContent = el.textContent.replace(/ShopOnline/g, site.name);
+          }
+        });
+      }
+    }).catch(()=>{});
+  }
 </script>
 </body>
 </html>

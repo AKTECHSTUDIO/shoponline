@@ -240,11 +240,152 @@ const Components = {
   }
 };
 
+// ---- Apply branding from site.json to every page ----
+const Branding = {
+  async apply() {
+    let site = {};
+    try {
+      const r = await fetch('/data/site.json?v=' + Date.now());
+      if (r.ok) site = await r.json();
+    } catch(e) { return; } // silently fail — static fallbacks remain
+
+    const name     = site.name     || 'ShopOnline';
+    const tagline  = site.tagline  || '';
+    const email    = site.contact?.email    || '';
+    const phone    = site.contact?.phone    || '';
+    const whatsapp = site.contact?.whatsapp || '';
+    const address  = site.contact?.address  || '';
+    const year     = new Date().getFullYear();
+
+    // Split name into two halves for the two-tone logo style
+    // e.g. "FlowOnlineAI" → "FlowOnline" + "AI", "ShopOnline" → "Shop" + "Online"
+    // Strategy: last capital-letter word becomes the <span>
+    const nameParts = this._splitName(name);
+
+    // 1. Nav logo — .nav__logo
+    document.querySelectorAll('.nav__logo').forEach(el => {
+      el.innerHTML = nameParts.first + '<span>' + nameParts.second + '</span>';
+    });
+
+    // 2. Footer brand name — .footer__brand h3
+    document.querySelectorAll('.footer__brand h3').forEach(el => {
+      el.innerHTML = nameParts.first + '<span>' + nameParts.second + '</span>';
+    });
+
+    // 3. Footer tagline
+    if (tagline) {
+      document.querySelectorAll('.footer__brand p').forEach(el => {
+        el.textContent = tagline;
+      });
+    }
+
+    // 4. Footer contact links
+    if (email) {
+      document.querySelectorAll('.footer__col a[href^="mailto:"]').forEach(el => {
+        el.href = 'mailto:' + email;
+        el.innerHTML = '📧 ' + email;
+      });
+    }
+    if (phone) {
+      document.querySelectorAll('.footer__col a[href^="tel:"]').forEach(el => {
+        el.href = 'tel:' + phone;
+        el.innerHTML = '📞 ' + phone;
+      });
+    }
+    if (whatsapp) {
+      document.querySelectorAll('.footer__col a[href*="wa.me"]').forEach(el => {
+        el.href = 'https://wa.me/' + whatsapp;
+      });
+      // Also update all WhatsApp buttons sitewide
+      document.querySelectorAll('a[href*="wa.me/919876543210"]').forEach(el => {
+        el.href = el.href.replace('919876543210', whatsapp);
+      });
+    }
+    if (address) {
+      document.querySelectorAll('.footer__col span').forEach(el => {
+        if (el.textContent.includes('Gujarat') || el.textContent.includes('India') || el.textContent.includes('Ahmedabad')) {
+          el.textContent = address;
+        }
+      });
+    }
+
+    // 5. Footer copyright line
+    document.querySelectorAll('.footer__bottom span:first-child').forEach(el => {
+      el.textContent = '© ' + year + ' ' + name + '. All rights reserved.';
+    });
+
+    // 6. Footer social links
+    if (site.social) {
+      const socMap = { instagram: '📸', facebook: '📘', linkedin: '💼' };
+      Object.entries(socMap).forEach(([key, icon]) => {
+        if (site.social[key]) {
+          document.querySelectorAll(`.footer__social a[title="${key.charAt(0).toUpperCase()+key.slice(1)}"]`).forEach(el => {
+            el.href = site.social[key];
+          });
+        }
+      });
+    }
+
+    // 7. <title> tag — append site name if not already customised
+    const titleEl = document.querySelector('title');
+    if (titleEl && name !== 'ShopOnline') {
+      titleEl.textContent = titleEl.textContent.replace(/ShopOnline/g, name);
+    }
+
+    // 8. Meta description / og tags
+    document.querySelectorAll('meta[name="description"], meta[property="og:title"], meta[property="og:description"], meta[name="twitter:title"]').forEach(el => {
+      const attr = el.hasAttribute('content') ? 'content' : null;
+      if (attr && name !== 'ShopOnline') {
+        el.setAttribute(attr, el.getAttribute(attr).replace(/ShopOnline/g, name));
+      }
+    });
+
+    // 9. Primary color CSS variable
+    if (site.primaryColor && /^#[0-9a-fA-F]{6}$/.test(site.primaryColor)) {
+      document.documentElement.style.setProperty('--c-terra', site.primaryColor);
+    }
+    if (site.accentColor && /^#[0-9a-fA-F]{6}$/.test(site.accentColor)) {
+      document.documentElement.style.setProperty('--c-gold', site.accentColor);
+    }
+  },
+
+  // Split "FlowOnlineAI" → {first:"FlowOnline", second:"AI"}
+  // Split "ShopOnline"   → {first:"Shop",       second:"Online"}
+  // Split "MyStore"      → {first:"My",          second:"Store"}
+  // Fallback: split in half
+  _splitName(name) {
+    if (!name) return { first: 'Shop', second: 'Online' };
+
+    // Find all uppercase letter positions (start of each CamelCase word)
+    const caps = [];
+    for (let i = 1; i < name.length; i++) {
+      if (name[i] >= 'A' && name[i] <= 'Z') caps.push(i);
+    }
+
+    if (caps.length === 0) {
+      // No camelCase — split at midpoint
+      const mid = Math.ceil(name.length / 2);
+      return { first: name.slice(0, mid), second: name.slice(mid) };
+    }
+
+    if (caps.length === 1) {
+      // e.g. ShopOnline → Shop | Online
+      return { first: name.slice(0, caps[0]), second: name.slice(caps[0]) };
+    }
+
+    // Multiple caps: last segment becomes <span>
+    // e.g. FlowOnlineAI → FlowOnline | AI
+    const last = caps[caps.length - 1];
+    return { first: name.slice(0, last), second: name.slice(last) };
+  }
+};
+
 // ---- Render nav + footer from JSON ----
 async function initPage() {
   Nav.init();
   ScrollAnim.init();
   Admin.init();
+  await Branding.apply(); // ← runs on every page, updates all text from site.json
 }
 
 // Auto-init

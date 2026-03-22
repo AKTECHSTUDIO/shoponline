@@ -374,6 +374,50 @@
   }
 
   ScrollAnim.init();
+
+  // Apply hero content from site.json
+  if (site.hero) {
+    const h = site.hero;
+    if (h.eyebrow) {
+      const ey = document.querySelector('.hero__eyebrow');
+      if (ey) ey.innerHTML = ey.innerHTML.replace(/Local.*?Days/, h.eyebrow);
+    }
+    if (h.title) {
+      const t = document.querySelector('.hero__title');
+      if (t) t.innerHTML = h.title;
+    }
+    if (h.description) {
+      const d = document.querySelector('.hero__desc');
+      if (d) d.textContent = h.description;
+    }
+    if (h.cta1) {
+      const c1 = document.querySelector('.hero__actions a.btn-primary');
+      if (c1) { c1.textContent = h.cta1.text || c1.textContent; c1.href = h.cta1.href || c1.href; }
+    }
+    if (h.cta2) {
+      const c2 = document.querySelector('.hero__actions a.btn-ghost');
+      if (c2) { c2.textContent = h.cta2.text || c2.textContent; c2.href = h.cta2.href || c2.href; }
+    }
+    if (h.stats) {
+      document.querySelectorAll('.hero__stat').forEach((el, i) => {
+        if (h.stats[i]) {
+          const n = el.querySelector('.hero__stat-num');
+          const l = el.querySelector('.hero__stat-label');
+          if (n && h.stats[i].num) n.textContent = h.stats[i].num;
+          if (l && h.stats[i].label) l.textContent = h.stats[i].label;
+        }
+      });
+    }
+  }
+
+  // Update any remaining hardcoded brand name mentions in page text
+  if (site.name && site.name !== 'ShopOnline') {
+    document.querySelectorAll('p, span, h2, h3').forEach(el => {
+      if (el.children.length === 0 && el.textContent.includes('ShopOnline')) {
+        el.textContent = el.textContent.replace(/ShopOnline/g, site.name);
+      }
+    });
+  }
 })();
 </script>
 </body>
