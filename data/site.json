@@ -23,7 +23,7 @@
   },
   "features": {
     "emailNotifications": true,
-    "googleSheetsWebhook": "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE",
+    "googleSheetsWebhook": "https://script.google.com/macros/s/AKfycbwdhRCDEQv3vI0UDVQhr5dNVe3PNBYY6w770tu_A2SkgSG4UVfvD-rNdz-XDoPzHK_U/exec",
     "emailjsServiceId": "YOUR_EMAILJS_SERVICE_ID",
     "emailjsTemplateId": "YOUR_EMAILJS_TEMPLATE_ID",
     "emailjsPublicKey": "YOUR_EMAILJS_PUBLIC_KEY"
@@ -32,12 +32,27 @@
     "eyebrow": "Local → Online in 7 Days",
     "title": "Turn Your Local Shop Into an <em>Online Business</em>",
     "description": "We build beautiful, fast online stores for shop owners across India. No tech skills needed. Get discovered by thousands of customers online.",
-    "cta1": { "text": "Start Your Online Store →", "href": "/pages/client-form.html" },
-    "cta2": { "text": "See Our Work", "href": "/pages/works.html" },
+    "cta1": {
+      "text": "Start Your Online Store →",
+      "href": "/pages/client-form.html"
+    },
+    "cta2": {
+      "text": "See Our Work",
+      "href": "/pages/works.html"
+    },
     "stats": [
-      { "num": "150+", "label": "Shops Online" },
-      { "num": "7 Days", "label": "Avg. Delivery" },
-      { "num": "4.9★", "label": "Client Rating" }
+      {
+        "num": "150+",
+        "label": "Shops Online"
+      },
+      {
+        "num": "7 Days",
+        "label": "Avg. Delivery"
+      },
+      {
+        "num": "4.9★",
+        "label": "Client Rating"
+      }
     ]
   }
 }
