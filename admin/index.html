@@ -222,7 +222,14 @@
           <code style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:.7rem">GITHUB_CLIENT_ID</code> and <code style="background:var(--bg);padding:1px 4px;border-radius:3px;font-size:.7rem">GITHUB_CLIENT_SECRET</code>
         </div>
       </div>
-      <div class="fg"><label class="fl">GitHub Client ID (paste here to save)</label><input class="fi fi-mono" id="setupClientId" placeholder="Ov23liXXXXXXXXXXXXXX"></div>
+      <div class="fg">
+        <label class="fl">GitHub Client ID <span style="color:var(--gold)">(NOT the secret)</span></label>
+        <input class="fi fi-mono" id="setupClientId" placeholder="Ov23liXXXXXXXXXXXXXX  (starts with Ov23li, ~20 chars)">
+        <div style="font-size:.7rem;color:var(--txt2);margin-top:4px">
+          ✅ Client ID looks like: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">Ov23liAbCdEfGhIjKlMn</code> (~20 chars)<br>
+          ❌ NOT the Client Secret (which is 40 hex chars like <code style="background:var(--bg);padding:1px 5px;border-radius:3px">cb0da3d318cce0e...</code>)
+        </div>
+      </div>
       <div style="font-size:.72rem;color:var(--txt2);margin-bottom:12px">⚠️ Client Secret must be set as a Netlify environment variable — never paste it here.</div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveOAuthSetup()">Save & Enable OAuth</button>
@@ -385,6 +392,25 @@ window.addEventListener('DOMContentLoaded', async () => {
   const keyHash  = localStorage.getItem(K.KEY_HASH);
 
   if(clientId){
+    // Detect if user accidentally stored a Client Secret instead of Client ID
+    const looksLikeSecret = /^[0-9a-f]{40}$/i.test(clientId) || clientId.length > 50;
+    if(looksLikeSecret){
+      // Clear it and show setup again with an error
+      localStorage.removeItem(K.CLIENT_ID);
+      const cbUrl = document.getElementById('callbackUrlDisplay');
+      if(cbUrl) cbUrl.textContent = location.origin + '/admin/';
+      showGate('gateOAuthSetup');
+      // Show error after a tick so the DOM is ready
+      setTimeout(() => {
+        const inp = document.getElementById('setupClientId');
+        if(inp){
+          inp.style.borderColor = 'var(--err)';
+          inp.placeholder = 'Paste Client ID here (starts with Ov23li...)';
+        }
+        toast('❌ Wrong value stored — that was a Client Secret, not a Client ID. Please paste the correct Client ID.', 'err');
+      }, 100);
+      return;
+    }
     // OAuth mode — show GitHub login
     setupOAuthButton(clientId);
     showGate('gateOAuth');
@@ -403,7 +429,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 function setupOAuthButton(clientId){
   const state   = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
   sessionStorage.setItem('oauth_state', state);
-  const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo&state=${state}&redirect_uri=${encodeURIComponent(location.origin+'/admin/')}`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=read%3Auser&state=${state}&redirect_uri=${encodeURIComponent(location.origin+'/admin/')}`;
   const btn = document.getElementById('ghLoginBtn');
   if(btn) btn.href = url;
 }
@@ -509,6 +535,17 @@ function startOAuthSetup(){
 function saveOAuthSetup(){
   const id = document.getElementById('setupClientId').value.trim();
   if(!id){ toast('Paste your GitHub Client ID first','err'); return; }
+
+  // Client IDs start with "Ov23li" and are ~20 chars
+  // Client Secrets are 40 hex chars — catch common mistake of pasting the wrong one
+  if(/^[0-9a-f]{40}$/i.test(id)){
+    toast('❌ That looks like a Client Secret, not a Client ID. Client ID starts with "Ov23li" and is ~20 chars.','err');
+    return;
+  }
+  if(id.length > 50){
+    toast('❌ Client ID is too long. Make sure you copied the Client ID, not the Client Secret.','err');
+    return;
+  }
   localStorage.setItem(K.CLIENT_ID, id);
   setupOAuthButton(id);
   showGate('gateOAuth');
