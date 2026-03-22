@@ -512,10 +512,22 @@ async function handleOAuthCallback(code, state){
     }
 
     if(!fnRes.ok || fnData.error){
+      // Show full diagnostic info including what client_id was used
+      const debugInfo = fnData.client_id_used
+        ? `<br><br><strong>Debug:</strong> Client ID used: <code>${fnData.client_id_used}</code> (${fnData.client_id_length} chars)`
+        : '';
+      const rawInfo = fnData.github_raw
+        ? `<br><code style="font-size:.7rem;color:var(--txt2)">${JSON.stringify(fnData.github_raw)}</code>`
+        : '';
       showOAuthError(
         `<strong>OAuth exchange failed</strong><br><br>` +
-        `${fnData.error || `HTTP ${fnRes.status}`}<br><br>` +
-        `Check that <code>GITHUB_CLIENT_ID</code> and <code>GITHUB_CLIENT_SECRET</code> are set correctly in Cloudflare environment variables.`
+        `${fnData.error || `HTTP ${fnRes.status}`}` +
+        debugInfo + rawInfo +
+        `<br><br>` +
+        `<strong>Quick fix checklist:</strong><br>` +
+        `1. Visit <a href="/github-oauth?debug=1" target="_blank" style="color:var(--terra)">/github-oauth?debug=1</a> — check CLIENT_ID prefix matches your GitHub app<br>` +
+        `2. In your GitHub OAuth App → regenerate Client Secret → update <code>GITHUB_CLIENT_SECRET</code> in Cloudflare<br>` +
+        `3. After updating vars → Cloudflare Deployments → Retry deployment`
       );
       return;
     }
